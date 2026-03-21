@@ -268,6 +268,20 @@
       line-height: 1.75;
     }
 
+    .info-source-link {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: rgba(0,255,136,0.45);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(0,255,136,0.18);
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .info-source-link:hover {
+      color: #00ff88;
+      border-color: rgba(0,255,136,0.55);
+    }
+
     /* ── SLIDE NAV ── */
     #slide-nav {
       position: fixed;
@@ -646,7 +660,7 @@
     }
 
     /* ── LOE LEGENDS ── */
-    #legend5, #legend6, #legend7 {
+    #legend5, #legend6, #legend7, #legend8 {
       position: fixed;
       bottom: 28px; left: 18px;
       z-index: 200;
@@ -657,8 +671,9 @@
     }
 
     #legend5 { border: 1px solid rgba(0,212,255,0.25); }
-    #legend6 { border: 1px solid rgba(255,60,60,0.28); }
+    #legend6 { border: 1px solid rgba(255,85,0,0.28); }
     #legend7 { border: 1px solid rgba(255,140,0,0.25); }
+    #legend8 { border: 1px solid rgba(255,60,60,0.28); }
 
     .leg5-head {
       font-family: 'Orbitron', monospace; font-size: 8px;
@@ -668,9 +683,9 @@
     }
     .leg6-head {
       font-family: 'Orbitron', monospace; font-size: 8px;
-      letter-spacing: 4px; color: rgba(255,60,60,0.5);
+      letter-spacing: 4px; color: rgba(255,85,0,0.5);
       margin-bottom: 11px; padding-bottom: 8px;
-      border-bottom: 1px solid rgba(255,60,60,0.15);
+      border-bottom: 1px solid rgba(255,85,0,0.15);
     }
     .leg7-head {
       font-family: 'Orbitron', monospace; font-size: 8px;
@@ -678,8 +693,14 @@
       margin-bottom: 11px; padding-bottom: 8px;
       border-bottom: 1px solid rgba(255,140,0,0.15);
     }
+    .leg8-head {
+      font-family: 'Orbitron', monospace; font-size: 8px;
+      letter-spacing: 4px; color: rgba(255,60,60,0.5);
+      margin-bottom: 11px; padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255,60,60,0.15);
+    }
 
-    .leg5-row, .leg6-row, .leg7-row {
+    .leg5-row, .leg6-row, .leg7-row, .leg8-row {
       display: flex; align-items: center;
       gap: 10px; margin: 7px 0;
       font-size: 10px; color: rgba(210,210,210,0.7);
@@ -788,6 +809,9 @@
       </div>
       <hr class="info-divider">
       <div class="info-desc" id="info-desc"></div>
+      <div id="info-source" style="display:none;margin-top:12px;padding-top:10px;border-top:1px solid rgba(0,255,136,0.1)">
+        <a id="info-source-link" href="#" target="_blank" rel="noopener noreferrer" class="info-source-link">SOURCE →</a>
+      </div>
     </div>
   </div>
 </div>
@@ -816,12 +840,7 @@
 <!-- LOE 2 legend -->
 <div id="legend6">
   <div class="leg6-head">LOE 2 // KEY</div>
-  <div class="leg6-row"><div class="loe-icon" id="leg6-struck"></div>Nuclear site struck</div>
-  <div class="leg6-row"><div class="loe-icon" id="leg6-threat"></div>Active threat (Pickaxe Mtn)</div>
-  <div class="leg6-row">
-    <div style="width:26px;height:0;border-top:1px dashed rgba(0,212,255,0.7);flex-shrink:0"></div>
-    B-2 flight path (Diego Garcia)
-  </div>
+  <div class="leg6-row"><div class="loe-icon" id="leg6-site"></div>Missile site / production (struck)</div>
 </div>
 
 <!-- LOE 3 legend -->
@@ -830,6 +849,7 @@
   <div class="leg7-row"><div class="loe-icon" id="leg7-hizb"></div>Hezbollah (degraded)</div>
   <div class="leg7-row"><div class="loe-icon" id="leg7-houthi"></div>Houthi / Ansar Allah</div>
   <div class="leg7-row"><div class="loe-icon" id="leg7-pmf"></div>PMF / Kataib Hezbollah</div>
+  <div class="leg7-row"><div class="loe-icon" id="leg7-deal"></div>Gaza deal (Oct 2025)</div>
   <div class="leg7-row">
     <div style="width:26px;height:0;border-top:2px dashed rgba(255,140,0,0.7);flex-shrink:0"></div>
     Supply route (active)
@@ -837,6 +857,17 @@
   <div class="leg7-row">
     <div style="width:26px;height:0;border-top:2px dashed rgba(255,60,60,0.5);flex-shrink:0"></div>
     Maritime route (interdicted)
+  </div>
+</div>
+
+<!-- LOE 4 legend -->
+<div id="legend8">
+  <div class="leg8-head">LOE 4 // KEY</div>
+  <div class="leg8-row"><div class="loe-icon" id="leg8-struck"></div>Nuclear site struck</div>
+  <div class="leg8-row"><div class="loe-icon" id="leg8-threat"></div>Active threat (Pickaxe Mtn)</div>
+  <div class="leg8-row">
+    <div style="width:26px;height:0;border-top:1px dashed rgba(0,212,255,0.7);flex-shrink:0"></div>
+    B-2 flight path (Diego Garcia)
   </div>
 </div>
 
@@ -886,8 +917,9 @@
   <button class="slide-btn"        onclick="showSlide(3)">03 // INTERNAL REGIONS</button>
   <button class="slide-btn"        onclick="showSlide(4)">04 // RANGE FANS</button>
   <button class="slide-btn"        onclick="showSlide(5)">LOE 1 // NAVY</button>
-  <button class="slide-btn"        onclick="showSlide(6)">LOE 2 // HAMMER</button>
+  <button class="slide-btn"        onclick="showSlide(6)">LOE 2 // MISSILES</button>
   <button class="slide-btn"        onclick="showSlide(7)">LOE 3 // PROXIES</button>
+  <button class="slide-btn"        onclick="showSlide(8)">LOE 4 // NUCLEAR</button>
 </div>
 
 <!-- Coordinate tracker -->
@@ -1246,6 +1278,21 @@ function mkInterdiction(s=22) {
   </svg>`;
 }
 
+function mkMissileSite(s=28) {
+  return `<svg width="${s}" height="${s}" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="14,1 27,14 14,27 1,14" fill="rgba(255,80,0,0.14)" stroke="#ff5500" stroke-width="1.5" stroke-linejoin="round"/>
+    <line x1="8" y1="8" x2="20" y2="20" stroke="#ff5500" stroke-width="2.2" stroke-linecap="round"/>
+    <line x1="20" y1="8" x2="8" y2="20" stroke="#ff5500" stroke-width="2.2" stroke-linecap="round"/>
+  </svg>`;
+}
+
+function mkDeal(s=28) {
+  return `<svg width="${s}" height="${s}" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="14,2 17,11 26,11 19,17 22,26 14,20 6,26 9,17 2,11 11,11" fill="rgba(255,200,0,0.18)" stroke="#ffd700" stroke-width="1.4" stroke-linejoin="round"/>
+    <circle cx="14" cy="14" r="3" fill="#ffd700" opacity="0.9"/>
+  </svg>`;
+}
+
 const ICON_FNS = {
   airbase:   mkAirbase,
   naval:     mkNaval,
@@ -1411,31 +1458,45 @@ const PROVINCES = [
 const LOE1_SHIPS = [
   {
     type: 'sunk', name: 'IRIS Dena (sunk)', lat: 6.12, lng: 80.38,
-    desc: 'Moudge-class frigate. Torpedoed by USS Charlotte (SSN-766) on 4 Mar 2026, ~19nm off Galle, Sri Lanka. Two Mk-48 ADCAP torpedoes fired; one hit. ~130 crew; 32 survivors, 87 bodies recovered. First US submarine kill since WWII.'
+    desc: 'Moudge-class frigate. Torpedoed by USS Charlotte (SSN-766) on 4 Mar 2026, ~19nm off Galle, Sri Lanka. Two Mk-48 ADCAP torpedoes fired; one hit. ~130 crew; 32 survivors, 87 bodies recovered. First US submarine kill since WWII.',
+    source: 'https://en.wikipedia.org/wiki/Sinking_of_IRIS_Dena',
+    sourceLabel: 'Wikipedia — Sinking of IRIS Dena',
   },
   {
     type: 'struck', name: 'IRIN HQ — Bandar Abbas', lat: 27.1865, lng: 56.2808,
-    desc: 'Main fleet HQ struck in Operation Epic Fury. Pier infrastructure, logistics vessels, and fast attack craft destroyed in port. Sahand and Sabalan frigates struck.'
+    desc: 'Main fleet HQ struck in Operation Epic Fury. Pier infrastructure, logistics vessels, and fast attack craft destroyed in port. Sahand and Sabalan frigates struck.',
+    source: 'https://www.csis.org/analysis/how-lose-navy-10-days',
+    sourceLabel: 'CSIS — How to Lose a Navy in 10 Days',
   },
   {
     type: 'struck', name: 'Larak Island IRGCN', lat: 26.85, lng: 56.37,
-    desc: 'IRGCN fast-boat base. Multiple swarm vessels and 16 minelaying craft destroyed in opening 48-hour strikes. Key Hormuz chokepoint capacity eliminated.'
+    desc: 'IRGCN fast-boat base. Multiple swarm vessels and 16 minelaying craft destroyed in opening 48-hour strikes. Key Hormuz chokepoint capacity eliminated.',
+    source: 'https://www.csis.org/analysis/how-lose-navy-10-days',
+    sourceLabel: 'CSIS — How to Lose a Navy in 10 Days',
   },
   {
     type: 'struck', name: 'Jask Naval Base', lat: 25.6447, lng: 57.768,
-    desc: 'Newly expanded strategic base east of Hormuz. Submarine pens and logistics infrastructure destroyed. Forward projection capability neutralized.'
+    desc: 'Newly expanded strategic base east of Hormuz. Submarine pens and logistics infrastructure destroyed. Forward projection capability neutralized.',
+    source: 'https://www.twz.com/news-features/u-s-submarine-sinks-iranian-warship-in-the-indian-ocean',
+    sourceLabel: 'The War Zone — Iran Naval Campaign',
   },
   {
     type: 'sunk', name: 'Shahid Bagheri (drone carrier)', lat: 25.9, lng: 57.4,
-    desc: 'Iranian drone-carrier converted vessel. Struck by Tomahawk missiles. Eliminated Iran\'s primary maritime UAS launch capability.'
+    desc: 'Iranian drone-carrier converted vessel. Struck by Tomahawk missiles. Eliminated Iran\'s primary maritime UAS launch capability.',
+    source: 'https://nationalinterest.org/blog/buzz/irans-navy-taken-beating-during-operation-epic-fury-hk-031526',
+    sourceLabel: 'National Interest — Operation Epic Fury',
   },
   {
     type: 'struck', name: 'Bandar Anzali — Caspian Fleet', lat: 37.4685, lng: 49.462,
-    desc: 'Caspian fleet base. Corvettes and patrol vessels destroyed at port. Iran\'s Caspian presence eliminated.'
+    desc: 'Caspian fleet base. Corvettes and patrol vessels destroyed at port. Iran\'s Caspian presence eliminated.',
+    source: 'https://www.csis.org/analysis/how-lose-navy-10-days',
+    sourceLabel: 'CSIS — How to Lose a Navy in 10 Days',
   },
   {
     type: 'struck', name: 'Bandar Abbas — IRGCN Submarine', lat: 27.05, lng: 56.12,
-    desc: 'IRGC Navy submarine base. 1 submarine destroyed in port. Iran\'s subsurface capability neutralized per CENTCOM.'
+    desc: 'IRGC Navy submarine base. 1 submarine destroyed in port. Iran\'s subsurface capability neutralized per CENTCOM.',
+    source: 'https://gulfnews.com/world/mena/blown-up-17-iranian-navy-ships-including-1-submarine-says-us-admiral-1.500462632',
+    sourceLabel: 'Gulf News — 17 Ships Including Submarine',
   },
 ];
 
@@ -1443,38 +1504,96 @@ const USS_CHARLOTTE = {
   lat: 6.5, lng: 79.8,
   name: 'USS Charlotte (SSN-766)',
   desc: 'Los Angeles-class nuclear attack submarine. Fired 2× Mk-48 ADCAP torpedoes at IRIS Dena on 4 March 2026. First combat sinking by US submarine since WWII. First torpedo kill of any kind since ARA Belgrano (1982 Falklands).',
+  source: 'https://en.wikipedia.org/wiki/Sinking_of_IRIS_Dena',
+  sourceLabel: 'Wikipedia — Sinking of IRIS Dena',
 };
 
 // ══════════════════════════════════════════════════════════
-//  LOE 2 DATA — MIDNIGHT HAMMER / MISSILE CAPABILITIES
+//  LOE 2 DATA — MISSILE CAPABILITIES (PRODUCTION / LAUNCHERS)
+// ══════════════════════════════════════════════════════════
+const LOE2_MISSILE_SITES = [
+  {
+    name: 'Parchin Military Complex (struck)',
+    lat: 35.52, lng: 51.77,
+    desc: 'IRGC Aerospace Forces primary missile and explosives production complex east of Tehran. Two main production halls destroyed — one manufacturing solid-fuel motors, one assembling Fateh-class missiles. IDF: "core of Iran\'s missile production capacity." Post-strike satellite imagery confirmed extensive structural collapse.',
+    source: 'https://en.wikipedia.org/wiki/Parchin_military_complex',
+    sourceLabel: 'Wikipedia — Parchin Military Complex',
+  },
+  {
+    name: 'Shahrud Space & Missile Test Site (struck)',
+    lat: 36.23, lng: 55.22,
+    desc: 'Major solid-propellant testing and missile development centre in Semnan Province. Used for engine tests for Sejjil-2, Emad and space launch vehicles. Two launch pads and production buildings destroyed. Significantly degraded Iran\'s future solid-fuel missile development pipeline.',
+    source: 'https://en.wikipedia.org/wiki/Shahroud_Space_Launch_Site',
+    sourceLabel: 'Wikipedia — Shahrud Space Launch Site',
+  },
+  {
+    name: 'Imam Ali Missile Base (struck)',
+    lat: 33.50, lng: 48.35,
+    desc: 'Large underground MRBM launcher complex in Lorestan Province near Khorramabad. Hardened storage for Emad and Ghadr-1 ballistic missiles. IDF reported 300+ ballistic missile launchers inoperable nationwide — Imam Ali was a primary target. Tunnel collapse damage confirmed.',
+    source: 'https://en.wikipedia.org/wiki/Imam_Ali_missile_base',
+    sourceLabel: 'Wikipedia — Imam Ali Missile Base',
+  },
+  {
+    name: 'SHIG / Shahid Hemmat Complex (struck)',
+    lat: 35.58, lng: 51.10,
+    desc: 'Shahid Hemmat Industrial Group — Iran\'s primary ballistic missile manufacturer SW of Tehran. Produces Emad, Ghadr, and Khorramshahr-4 airframes and guidance systems. Struck multiple times across the 12-Day War. IDF assessment: Iran "cannot manufacture new ballistic missiles" following destruction of SHIG and satellite facilities.',
+    source: 'https://en.wikipedia.org/wiki/Shahid_Hemmat_Industrial_Group',
+    sourceLabel: 'Wikipedia — Shahid Hemmat Industrial Group',
+  },
+  {
+    name: 'Haji Abad Missile Depot (struck)',
+    lat: 28.30, lng: 55.87,
+    desc: 'Underground missile storage and launcher facility in Hormozgan Province. Struck 28 Feb 2026 during Op Epic Fury opening strikes. High-altitude penetrating munitions used against tunnel complexes. Disrupted IRGC ability to surge Gulf-region launch capacity in early days of the conflict.',
+    source: 'https://en.wikipedia.org/wiki/2026_Iran_war',
+    sourceLabel: 'Wikipedia — 2026 Iran War',
+  },
+  {
+    name: 'Kermanshah Missile Base (struck)',
+    lat: 34.55, lng: 46.95,
+    desc: 'IRGC ballistic missile launcher base north of Kermanshah city. Multiple mobile Fateh and Qiam launchers destroyed. Positioned close to Iraq border — primary western node for strikes into Iraq and the eastern Mediterranean. Confirmed struck and 75% of launchers inoperable per IDF battle-damage assessment.',
+    source: 'https://en.wikipedia.org/wiki/2026_Iran_war',
+    sourceLabel: 'Wikipedia — 2026 Iran War',
+  },
+];
+
+// ══════════════════════════════════════════════════════════
+//  LOE 4 DATA — MIDNIGHT HAMMER / NUCLEAR SITES
 // ══════════════════════════════════════════════════════════
 // Operation Midnight Hammer — 22 Jun 2025 (part of 12-Day War, Jun 13–24 2025)
-const LOE2_TARGETS = [
+const LOE4_TARGETS = [
   {
     type: 'struck', name: 'Fordow FFEP (struck)', lat: 34.8847, lng: 50.9934,
     mops: 4,
-    desc: 'Buried ~80m underground near Qom. Hit by 4× GBU-57A/B MOPs from B-2 stealth bombers — first operational use of the MOP. Substantially damaged. IAEA denied access post-strike. Reportedly still enriching at degraded capacity.'
+    desc: 'Buried ~80m underground near Qom. Hit by 4× GBU-57A/B MOPs from B-2 stealth bombers — first operational use of the MOP. Substantially damaged. IAEA denied access post-strike. Reportedly still enriching at degraded capacity.',
+    source: 'https://en.wikipedia.org/wiki/2025_United_States_strikes_on_Iranian_nuclear_sites',
+    sourceLabel: 'Wikipedia — 2025 US Strikes on Iranian Nuclear Sites',
   },
   {
     type: 'struck', name: 'Natanz FEUP (struck)', lat: 33.722, lng: 51.727,
     mops: 6,
-    desc: 'Primary enrichment facility. Hit by 6× MOPs + Tomahawk cruise missiles from submarine. Cascade halls collapsed. Above-ground structures destroyed. Underground halls partially intact per subsequent imagery.'
+    desc: 'Primary enrichment facility. Hit by 6× MOPs + Tomahawk cruise missiles from submarine. Cascade halls collapsed. Above-ground structures destroyed. Underground halls partially intact per subsequent imagery.',
+    source: 'https://en.wikipedia.org/wiki/2025_United_States_strikes_on_Iranian_nuclear_sites',
+    sourceLabel: 'Wikipedia — 2025 US Strikes on Iranian Nuclear Sites',
   },
   {
     type: 'struck', name: 'Isfahan UCF (struck)', lat: 32.528, lng: 51.721,
     mops: 4,
-    desc: 'Uranium Conversion Facility. Hit during 12-Day War. IAEA subsequently revealed a 4th undeclared enrichment facility in an underground tunnel complex here. Status unknown — inspectors could not visit. 440.9 kg of 60%-enriched uranium stored underground at this site.'
+    desc: 'Uranium Conversion Facility. Hit during 12-Day War. IAEA subsequently revealed a 4th undeclared enrichment facility in an underground tunnel complex here. Status unknown — inspectors could not visit. 440.9 kg of 60%-enriched uranium stored underground at this site.',
+    source: 'https://www.thenationalnews.com/news/mena/2026/03/18/iran-has-new-underground-nuclear-site-iaea-reveals/',
+    sourceLabel: 'The National — IAEA Reveals New Isfahan Site',
   },
   {
     type: 'threat', name: 'Pickaxe Mountain ⚠', lat: 33.68, lng: 51.59,
     mops: 0,
-    desc: 'Deep-underground suspected nuclear site ~1 mile south of Natanz. Buried ~100m in granite — deeper than Fordow. Construction began 2021. Iran claims centrifuge assembly; analysts suspect enrichment capability. NOT STRUCK. IAEA has never visited. Activity INCREASED post-Midnight Hammer strikes (PBS Frontline / Washington Post, 2025).'
+    desc: 'Deep-underground suspected nuclear site ~1 mile south of Natanz. Buried ~100m in granite — deeper than Fordow. Construction began 2021. Iran claims centrifuge assembly; analysts suspect enrichment capability. NOT STRUCK. IAEA has never visited. Activity INCREASED post-Midnight Hammer strikes (PBS Frontline / Washington Post, 2025).',
+    source: 'https://www.pbs.org/wgbh/frontline/article/iran-suspected-nuclear-site-pickaxe-mountain-us-israel-war/',
+    sourceLabel: 'PBS Frontline — Pickaxe Mountain',
   },
 ];
 
 // B-2 departs from Whiteman AFB (MO) or Diego Garcia
 const DIEGO_GARCIA = [72.4, -7.3];
-const LOE2_B2_ROUTES = [
+const LOE4_B2_ROUTES = [
   { to: [50.9934, 34.8847], label: 'B-2 → FORDOW' },
   { to: [51.727,  33.722 ], label: 'B-2 → NATANZ' },
   { to: [51.721,  32.528 ], label: 'B-2 → ISFAHAN' },
@@ -1488,19 +1607,25 @@ const LOE3_PROXIES = [
     group: 'HZB', color: '#ffcc00', name: 'Hezbollah — South Lebanon',
     lat: 33.55, lng: 35.5, status: 'DEGRADED / REARMING',
     statusColor: '#ffaa00',
-    desc: 'Military infrastructure withdrawn from southern Lebanon after 2024 ceasefire. Lebanese Army deployed in south. Western intelligence reports Iran resumed overland missile deliveries via Iraq–Syria corridor. Pre-war: ~150K rockets/missiles. Arsenal significantly depleted; replenishment ongoing.'
+    desc: 'Military infrastructure withdrawn from southern Lebanon after 2024 ceasefire. Lebanese Army deployed in south. Western intelligence reports Iran resumed overland missile deliveries via Iraq–Syria corridor. Pre-war: ~150K rockets/missiles. Arsenal significantly depleted; replenishment ongoing.',
+    source: 'https://www.timesofisrael.com/as-irans-other-proxy-groups-join-war-houthi-rebels-in-yemen-hold-back-for-now/',
+    sourceLabel: 'Times of Israel — Iran Proxy Groups',
   },
   {
     group: 'HTH', color: '#cc44ff', name: 'Houthi / Ansar Allah — Sanaa',
     lat: 15.35, lng: 44.2, status: 'HOLDING FIRE',
     statusColor: '#aa44ff',
-    desc: 'Unexpectedly sitting out 2026 Iran war. Weapons stockpile running low after sustained US/Israeli strikes 2024–2025. Aug 28 2025: Israeli airstrikes in Sanaa killed 13 senior officials including PM and military chief of staff. CENTCOM Jul 2025: seized 750+ tons of Iranian-origin materiel bound for Houthis. Drone supply bottlenecked by guidance electronics.'
+    desc: 'Unexpectedly sitting out 2026 Iran war. Weapons stockpile running low after sustained US/Israeli strikes 2024–2025. Aug 28 2025: Israeli airstrikes in Sanaa killed 13 senior officials including PM and military chief of staff. CENTCOM Jul 2025: seized 750+ tons of Iranian-origin materiel bound for Houthis. Drone supply bottlenecked by guidance electronics.',
+    source: 'https://foreignpolicy.com/2026/03/11/iran-war-houthis-yemen-military-operations-calculus-ground-force-mobilization/',
+    sourceLabel: 'Foreign Policy — Houthis & the Iran War',
   },
   {
     group: 'PMF', color: '#ff6666', name: 'PMF / Kataib Hezbollah — Iraq',
     lat: 33.3, lng: 44.4, status: 'ACTIVE',
     statusColor: '#ff4444',
-    desc: 'Iraqi Popular Mobilization Forces, Iran-backed Shia militias. Primary overland conduit for Iranian weapons to Hezbollah. Drone strikes on US bases in Iraq. Supply chain partially disrupted by coalition strikes on logistics nodes. Kataib Hezbollah designated terrorist organization.'
+    desc: 'Iraqi Popular Mobilization Forces, Iran-backed Shia militias. Primary overland conduit for Iranian weapons to Hezbollah. Drone strikes on US bases in Iraq. Supply chain partially disrupted by coalition strikes on logistics nodes. Kataib Hezbollah designated terrorist organization.',
+    source: 'https://en.wikipedia.org/wiki/2026_Iran_war',
+    sourceLabel: 'Wikipedia — 2026 Iran War',
   },
 ];
 
@@ -1526,6 +1651,14 @@ const LOE3_INTERDICTIONS = [
   { lat: 12.5, lng: 44.8, label: 'Red Sea interdiction ops' },
 ];
 
+const LOE3_GAZA = {
+  lat: 31.35, lng: 34.3,
+  name: 'Gaza Strip — Trump "Board of Peace"',
+  desc: 'Sep 29 2025: Trump administration unveiled a 20-point Gaza reconstruction and governance plan (the "Board of Peace"). Oct 3 2025: Hamas agreed to release remaining hostages and transfer governance to Palestinian technocrats. Oct 10 2025: ceasefire entered into force, ending the Gaza conflict. Trump: "They had a Gaza problem and an Iran problem. Now they don\'t have those two problems." The deal severed Iran\'s most powerful Levant leverage point months before direct confrontation with Tehran.',
+  source: 'https://en.wikipedia.org/wiki/2025_Gaza_ceasefire',
+  sourceLabel: 'Wikipedia — 2025 Gaza Ceasefire',
+};
+
 // LOE panel HTML per slide
 const LOE_PANELS = {
   5: {
@@ -1544,18 +1677,17 @@ const LOE_PANELS = {
     `,
   },
   6: {
-    accent: '#ff3a3a',
+    accent: '#ff5500',
     html: `
-      <div class="loe-num" style="color:#ff3a3a">LOE 02 // AIR / STRATEGIC</div>
-      <div class="loe-title" style="color:#ff3a3a;border-bottom:1px solid rgba(255,60,60,0.18);padding-bottom:10px">DESTROY MISSILE CAPABILITIES</div>
-      <div class="loe-stat"><span class="loe-tick" style="color:#ff3a3a">▸</span><span>OP MIDNIGHT HAMMER — 22 JUN 2025</span></div>
-      <div class="loe-stat"><span class="loe-tick" style="color:#ff3a3a">▸</span><span><b style="color:#00d4ff">7×</b> B-2 SPIRITS / <b style="color:#00d4ff">125+</b> AIRCRAFT</span></div>
-      <div class="loe-stat"><span class="loe-tick" style="color:#ff3a3a">▸</span><span><b style="color:#00d4ff">14×</b> GBU-57A/B MOP (FIRST OP. USE)</span></div>
-      <div class="loe-stat"><span class="loe-tick" style="color:#ff3a3a">▸</span><span>FORDOW · NATANZ · ISFAHAN STRUCK</span></div>
+      <div class="loe-num" style="color:#ff5500">LOE 02 // FORCE DEGRADATION</div>
+      <div class="loe-title" style="color:#ff5500;border-bottom:1px solid rgba(255,85,0,0.18);padding-bottom:10px">DESTROY MISSILE CAPABILITIES</div>
+      <div class="loe-stat"><span class="loe-tick" style="color:#ff5500">▸</span><span><b style="color:#ff5500">300+</b> BALLISTIC LAUNCHERS INOPERABLE</span></div>
+      <div class="loe-stat"><span class="loe-tick" style="color:#ff5500">▸</span><span><b style="color:#ff5500">75%</b> OF LAUNCH CAPACITY DESTROYED</span></div>
+      <div class="loe-stat"><span class="loe-tick" style="color:#ff5500">▸</span><span><b style="color:#ff5500">2/3</b> OF 2,600 MIL-INDUSTRIAL SITES HIT</span></div>
       <hr class="loe-divider">
-      <div class="loe-stat"><span class="loe-tick" style="color:#ffcc00">★</span><span>440.9 KG @ 60% EU — ≈9 WEAPONS</span></div>
-      <div class="loe-stat"><span class="loe-tick" style="color:#ff6600">⚠</span><span style="color:#ff8844">PICKAXE MTN: ACTIVE — NEVER INSPECTED</span></div>
-      <div class="loe-stat"><span class="loe-tick" style="color:#ff6600">⚠</span><span style="color:#ff8844">IAEA 4TH SITE (ISFAHAN): STATUS UNKNOWN</span></div>
+      <div class="loe-stat"><span class="loe-tick" style="color:#ffcc00">★</span><span>PARCHIN · SHAHRUD · IMAM ALI STRUCK</span></div>
+      <div class="loe-stat"><span class="loe-tick" style="color:#ffcc00">★</span><span>SHIG · HAJI ABAD · KERMANSHAH STRUCK</span></div>
+      <div class="loe-stat"><span class="loe-tick" style="color:#ff3030">▸</span><span style="color:#ff8844">IDF: "CANNOT MANUFACTURE NEW MISSILES"</span></div>
     `,
   },
   7: {
@@ -1567,9 +1699,24 @@ const LOE_PANELS = {
       <div class="loe-stat"><span class="loe-tick" style="color:#cc44ff">▸</span><span><b style="color:#cc44ff">HOUTHIS:</b> HOLDING FIRE (ATTRITED)</span></div>
       <div class="loe-stat"><span class="loe-tick" style="color:#ff6666">▸</span><span><b style="color:#ff6666">PMF / KH:</b> ACTIVE — IRAQ CONDUIT</span></div>
       <hr class="loe-divider">
+      <div class="loe-stat"><span class="loe-tick" style="color:#ffd700">★</span><span>OCT 2025: GAZA DEAL — IRAN LEVERAGE GONE</span></div>
       <div class="loe-stat"><span class="loe-tick" style="color:#00d4ff">★</span><span>JUL 2025: CENTCOM SEIZES <b style="color:#00d4ff">750+ TONS</b></span></div>
-      <div class="loe-stat"><span class="loe-tick" style="color:#ff8c00">▸</span><span>OVERLAND IRAN→IRAQ→SYR→LEB: ACTIVE</span></div>
       <div class="loe-stat"><span class="loe-tick" style="color:#ff3030">▸</span><span>AUG 2025: 13 HOUTHI CMDR KILLED (SANAA)</span></div>
+    `,
+  },
+  8: {
+    accent: '#ff3a3a',
+    html: `
+      <div class="loe-num" style="color:#ff3a3a">LOE 04 // STRATEGIC / EXISTENTIAL</div>
+      <div class="loe-title" style="color:#ff3a3a;border-bottom:1px solid rgba(255,60,60,0.18);padding-bottom:10px">PREVENT NUCLEAR DEVELOPMENT</div>
+      <div class="loe-stat"><span class="loe-tick" style="color:#ff3a3a">▸</span><span>OP MIDNIGHT HAMMER — 22 JUN 2025</span></div>
+      <div class="loe-stat"><span class="loe-tick" style="color:#ff3a3a">▸</span><span><b style="color:#00d4ff">7×</b> B-2 SPIRITS / <b style="color:#00d4ff">125+</b> AIRCRAFT</span></div>
+      <div class="loe-stat"><span class="loe-tick" style="color:#ff3a3a">▸</span><span><b style="color:#00d4ff">14×</b> GBU-57A/B MOP (FIRST OP. USE)</span></div>
+      <div class="loe-stat"><span class="loe-tick" style="color:#ff3a3a">▸</span><span>FORDOW · NATANZ · ISFAHAN STRUCK</span></div>
+      <hr class="loe-divider">
+      <div class="loe-stat"><span class="loe-tick" style="color:#ffcc00">★</span><span>440.9 KG @ 60% EU — ≈9 WEAPONS</span></div>
+      <div class="loe-stat"><span class="loe-tick" style="color:#ff6600">⚠</span><span style="color:#ff8844">PICKAXE MTN: ACTIVE — NEVER INSPECTED</span></div>
+      <div class="loe-stat"><span class="loe-tick" style="color:#ff6600">⚠</span><span style="color:#ff8844">IAEA 4TH SITE (ISFAHAN): STATUS UNKNOWN</span></div>
     `,
   },
 };
@@ -1677,6 +1824,18 @@ map.on('mousemove', e => {
 });
 
 // Modal
+function setModalSource(url, label) {
+  const src = document.getElementById('info-source');
+  const link = document.getElementById('info-source-link');
+  link.href = url;
+  link.textContent = `SOURCE: ${label} →`;
+  src.style.display = 'block';
+}
+
+function hideModalSource() {
+  document.getElementById('info-source').style.display = 'none';
+}
+
 function closeInfo() {
   document.getElementById('modal-backdrop').classList.remove('open');
   if (currentSlide === 1) {
@@ -1688,14 +1847,17 @@ function closeInfo() {
   } else if (currentSlide === 5) {
     map.flyTo({ center: [62.0, 18.0], zoom: 3.6, pitch: 0, bearing: 0, duration: 1200, essential: true });
   } else if (currentSlide === 6) {
-    map.flyTo({ center: [60.0, 14.0], zoom: 3.2, pitch: 0, bearing: 0, duration: 1200, essential: true });
+    map.flyTo({ center: [52.0, 34.0], zoom: 5.0, pitch: 0, bearing: 0, duration: 1200, essential: true });
   } else if (currentSlide === 7) {
     map.flyTo({ center: [44.0, 28.0], zoom: 4.0, pitch: 0, bearing: 0, duration: 1200, essential: true });
+  } else if (currentSlide === 8) {
+    map.flyTo({ center: [60.0, 14.0], zoom: 3.2, pitch: 0, bearing: 0, duration: 1200, essential: true });
   } else {
     map.flyTo({ center: [54.5, 32.5], zoom: 5.0, pitch: 20, bearing: 0, duration: 1200, essential: true });
   }
 }
 function openInfo(loc) {
+  hideModalSource();
   const c = COLORS[loc.type];
   document.getElementById('modal-accent').style.background = c;
   document.getElementById('info-icon').innerHTML = ICON_FNS[loc.type](c, 36);
@@ -1965,6 +2127,7 @@ map.on('load', () => {
       document.getElementById('info-name').style.color = c;
       document.getElementById('info-coord').textContent = `${base.lat.toFixed(4)}° N   ${base.lng.toFixed(4)}° E`;
       document.getElementById('info-desc').textContent = base.desc;
+      hideModalSource();
       document.getElementById('modal-backdrop').classList.add('open');
       map.flyTo({ center: [base.lng, base.lat], zoom: Math.max(map.getZoom(), 7.5), duration: 900 });
     });
@@ -2039,6 +2202,7 @@ map.on('load', () => {
       document.getElementById('info-name').style.color = c;
       document.getElementById('info-coord').textContent = `Capital: ${p.capital}`;
       document.getElementById('info-desc').textContent = p.desc;
+      hideModalSource();
       document.getElementById('modal-backdrop').classList.add('open');
     });
     const mk = new mapboxgl.Marker({ element: el, anchor: 'center' })
@@ -2212,6 +2376,7 @@ map.on('load', () => {
       document.getElementById('info-coord').textContent = `${ship.lat.toFixed(4)}° N   ${ship.lng.toFixed(4)}° E`;
       document.getElementById('info-desc').textContent = ship.desc;
       document.getElementById('modal-backdrop').classList.add('open');
+      if (ship.source) setModalSource(ship.source, ship.sourceLabel);
       map.flyTo({ center: [ship.lng, ship.lat], zoom: Math.max(map.getZoom(), 7), duration: 900 });
     });
     addLoeMarker(el, ship.lng, ship.lat, slide5Markers);
@@ -2234,6 +2399,7 @@ map.on('load', () => {
     document.getElementById('info-coord').textContent = `${USS_CHARLOTTE.lat.toFixed(4)}° N   ${USS_CHARLOTTE.lng.toFixed(4)}° E`;
     document.getElementById('info-desc').textContent = USS_CHARLOTTE.desc;
     document.getElementById('modal-backdrop').classList.add('open');
+    if (USS_CHARLOTTE.source) setModalSource(USS_CHARLOTTE.source, USS_CHARLOTTE.sourceLabel);
     map.flyTo({ center: [USS_CHARLOTTE.lng, USS_CHARLOTTE.lat], zoom: Math.max(map.getZoom(), 6), duration: 900 });
   });
   addLoeMarker(charlotteEl, USS_CHARLOTTE.lng, USS_CHARLOTTE.lat, slide5Markers);
@@ -2246,12 +2412,46 @@ map.on('load', () => {
   coalitionMarkers._slide5 = slide5Markers;
 
   // ══════════════════════════════════════════════════════
-  //  LOE 2 — MIDNIGHT HAMMER / NUCLEAR SITES
+  //  LOE 2 — MISSILE PRODUCTION / LAUNCHER SITES
   // ══════════════════════════════════════════════════════
   const slide6Markers = [];
 
+  LOE2_MISSILE_SITES.forEach(site => {
+    const el = document.createElement('div');
+    el.className = 'struck-mk';
+    el.innerHTML = mkMissileSite();
+    el.style.filter = 'drop-shadow(0 0 6px rgba(255,85,0,0.8))';
+    el.title = site.name;
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      hideModalSource();
+      document.getElementById('modal-accent').style.background = '#ff5500';
+      document.getElementById('info-icon').innerHTML = mkMissileSite(36);
+      document.getElementById('info-cat').textContent = 'MISSILE SITE — STRUCK';
+      document.getElementById('info-cat').style.color = '#ff5500';
+      document.getElementById('info-name').textContent = site.name;
+      document.getElementById('info-name').style.color = '#ff5500';
+      document.getElementById('info-coord').textContent = `${site.lat.toFixed(4)}° N   ${site.lng.toFixed(4)}° E`;
+      document.getElementById('info-desc').textContent = site.desc;
+      document.getElementById('modal-backdrop').classList.add('open');
+      if (site.source) setModalSource(site.source, site.sourceLabel);
+      map.flyTo({ center: [site.lng, site.lat], zoom: Math.max(map.getZoom(), 7), duration: 900 });
+    });
+    addLoeMarker(el, site.lng, site.lat, slide6Markers);
+  });
+
+  // Populate legend6 icon
+  document.getElementById('leg6-site').innerHTML = mkMissileSite(22);
+
+  coalitionMarkers._slide6 = slide6Markers;
+
+  // ══════════════════════════════════════════════════════
+  //  LOE 4 — MIDNIGHT HAMMER / NUCLEAR SITES
+  // ══════════════════════════════════════════════════════
+  const slide8Markers = [];
+
   // Strike target markers
-  LOE2_TARGETS.forEach(tgt => {
+  LOE4_TARGETS.forEach(tgt => {
     const el = document.createElement('div');
     el.className = tgt.type === 'threat' ? 'threat-mk' : 'struck-mk';
     el.innerHTML = tgt.type === 'threat' ? mkThreat() : mkStruckNuclear();
@@ -2260,6 +2460,7 @@ map.on('load', () => {
     el.title = tgt.name;
     el.addEventListener('click', e => {
       e.stopPropagation();
+      hideModalSource();
       const c = tgt.type === 'threat' ? '#ff6600' : '#ff3a3a';
       document.getElementById('modal-accent').style.background = c;
       document.getElementById('info-icon').innerHTML = tgt.type === 'threat' ? mkThreat(36) : mkStruckNuclear(36);
@@ -2270,13 +2471,14 @@ map.on('load', () => {
       document.getElementById('info-coord').textContent = `${tgt.lat.toFixed(4)}° N   ${tgt.lng.toFixed(4)}° E`;
       document.getElementById('info-desc').textContent = tgt.desc;
       document.getElementById('modal-backdrop').classList.add('open');
+      if (tgt.source) setModalSource(tgt.source, tgt.sourceLabel);
       map.flyTo({ center: [tgt.lng, tgt.lat], zoom: Math.max(map.getZoom(), 8), duration: 900 });
     });
-    addLoeMarker(el, tgt.lng, tgt.lat, slide6Markers);
+    addLoeMarker(el, tgt.lng, tgt.lat, slide8Markers);
   });
 
   // B-2 flight paths (bezier curves from Diego Garcia)
-  const b2Features = LOE2_B2_ROUTES.map((r, i) => ({
+  const b2Features = LOE4_B2_ROUTES.map((r, i) => ({
     type: 'Feature',
     properties: { label: r.label },
     geometry: { type: 'LineString', coordinates: bezierCurve(DIEGO_GARCIA, r.to) },
@@ -2299,17 +2501,17 @@ map.on('load', () => {
     paint: { 'line-color': '#00d4ff', 'line-width': 1.2, 'line-opacity': 0.7, 'line-dasharray': [6, 4] },
   });
 
-  // Diego Garcia marker + B-2 label
+  // Diego Garcia marker
   const dgEl = document.createElement('div');
   dgEl.className = 'b2-label';
   dgEl.textContent = 'DIEGO GARCIA (B-2 DEPARTURE)';
-  addLoeMarker(dgEl, DIEGO_GARCIA[0], DIEGO_GARCIA[1], slide6Markers);
+  addLoeMarker(dgEl, DIEGO_GARCIA[0], DIEGO_GARCIA[1], slide8Markers);
 
-  // Populate legend6 icons
-  document.getElementById('leg6-struck').innerHTML = mkStruckNuclear(22);
-  document.getElementById('leg6-threat').innerHTML = mkThreat(22);
+  // Populate legend8 icons
+  document.getElementById('leg8-struck').innerHTML = mkStruckNuclear(22);
+  document.getElementById('leg8-threat').innerHTML = mkThreat(22);
 
-  coalitionMarkers._slide6 = slide6Markers;
+  coalitionMarkers._slide8 = slide8Markers;
 
   // ══════════════════════════════════════════════════════
   //  LOE 3 — PROXY INTERDICTION
@@ -2376,6 +2578,7 @@ map.on('load', () => {
       document.getElementById('info-coord').textContent = `${p.lat.toFixed(4)}° N   ${p.lng.toFixed(4)}° E`;
       document.getElementById('info-desc').textContent = p.desc;
       document.getElementById('modal-backdrop').classList.add('open');
+      if (p.source) setModalSource(p.source, p.sourceLabel);
       map.flyTo({ center: [p.lng, p.lat], zoom: Math.max(map.getZoom(), 7), duration: 900 });
     });
     addLoeMarker(el, p.lng, p.lat, slide7Markers);
@@ -2404,10 +2607,42 @@ map.on('load', () => {
     addLoeMarker(lblEl, pt.lng + 0.8, pt.lat, slide7Markers);
   });
 
+  // Gaza deal marker
+  const gazaEl = document.createElement('div');
+  gazaEl.className = 'struck-mk';
+  gazaEl.innerHTML = mkDeal();
+  gazaEl.style.filter = 'drop-shadow(0 0 8px rgba(255,215,0,0.9))';
+  gazaEl.title = LOE3_GAZA.name;
+  gazaEl.addEventListener('click', e => {
+    e.stopPropagation();
+    hideModalSource();
+    document.getElementById('modal-accent').style.background = '#ffd700';
+    document.getElementById('info-icon').innerHTML = mkDeal(36);
+    document.getElementById('info-cat').textContent = 'DIPLOMATIC — TRUMP "BOARD OF PEACE"';
+    document.getElementById('info-cat').style.color = '#ffd700';
+    document.getElementById('info-name').textContent = LOE3_GAZA.name;
+    document.getElementById('info-name').style.color = '#ffd700';
+    document.getElementById('info-coord').textContent = `${LOE3_GAZA.lat.toFixed(4)}° N   ${LOE3_GAZA.lng.toFixed(4)}° E`;
+    document.getElementById('info-desc').textContent = LOE3_GAZA.desc;
+    document.getElementById('modal-backdrop').classList.add('open');
+    if (LOE3_GAZA.source) setModalSource(LOE3_GAZA.source, LOE3_GAZA.sourceLabel);
+    map.flyTo({ center: [LOE3_GAZA.lng, LOE3_GAZA.lat], zoom: Math.max(map.getZoom(), 7), duration: 900 });
+  });
+  addLoeMarker(gazaEl, LOE3_GAZA.lng, LOE3_GAZA.lat, slide7Markers);
+
+  // Gaza label
+  const gazaLblEl = document.createElement('div');
+  gazaLblEl.className = 'b2-label';
+  gazaLblEl.style.color = 'rgba(255,215,0,0.85)';
+  gazaLblEl.style.borderLeft = '2px solid rgba(255,215,0,0.6)';
+  gazaLblEl.textContent = 'OCT 2025: DEAL';
+  addLoeMarker(gazaLblEl, LOE3_GAZA.lng + 0.5, LOE3_GAZA.lat + 0.4, slide7Markers);
+
   // Populate legend7 icons
   document.getElementById('leg7-hizb').innerHTML   = mkProxy('#ffcc00', 'HZB', 22);
   document.getElementById('leg7-houthi').innerHTML = mkProxy('#cc44ff', 'HTH', 22);
   document.getElementById('leg7-pmf').innerHTML    = mkProxy('#ff6666', 'PMF', 22);
+  document.getElementById('leg7-deal').innerHTML   = mkDeal(22);
 
   coalitionMarkers._slide7 = slide7Markers;
 
@@ -2436,8 +2671,9 @@ const SLIDE_LAYERS_4 = [
   'range-mirv-glow', 'range-mirv-line',
 ];
 const SLIDE_LAYERS_5 = [];
-const SLIDE_LAYERS_6 = ['b2-glow', 'b2-lines'];
+const SLIDE_LAYERS_6 = [];
 const SLIDE_LAYERS_7 = ['supply-glow', 'supply-lines'];
+const SLIDE_LAYERS_8 = ['b2-glow', 'b2-lines'];
 
 function setLayerVisibility(ids, vis) {
   ids.forEach(id => {
@@ -2450,6 +2686,7 @@ function getSlide4Markers() { return coalitionMarkers._slide4 || []; }
 function getSlide5Markers() { return coalitionMarkers._slide5 || []; }
 function getSlide6Markers() { return coalitionMarkers._slide6 || []; }
 function getSlide7Markers() { return coalitionMarkers._slide7 || []; }
+function getSlide8Markers() { return coalitionMarkers._slide8 || []; }
 
 function showSlide(n) {
   currentSlide = n;
@@ -2463,11 +2700,12 @@ function showSlide(n) {
   getSlide5Markers().forEach(m => m.getElement().style.display = 'none');
   getSlide6Markers().forEach(m => m.getElement().style.display = 'none');
   getSlide7Markers().forEach(m => m.getElement().style.display = 'none');
+  getSlide8Markers().forEach(m => m.getElement().style.display = 'none');
   setLayerVisibility([
     ...SLIDE_LAYERS_2, ...SLIDE_LAYERS_3, ...SLIDE_LAYERS_4,
-    ...SLIDE_LAYERS_6, ...SLIDE_LAYERS_7,
+    ...SLIDE_LAYERS_7, ...SLIDE_LAYERS_8,
   ], 'none');
-  ['counts','legend','legend2','legend3','legend4','legend5','legend6','legend7','loe-panel']
+  ['counts','legend','legend2','legend3','legend4','legend5','legend6','legend7','legend8','loe-panel']
     .forEach(id => document.getElementById(id).style.display = 'none');
 
   if (n === 1) {
@@ -2506,14 +2744,13 @@ function showSlide(n) {
 
   } else if (n === 6) {
     getSlide6Markers().forEach(m => m.getElement().style.display = '');
-    setLayerVisibility(SLIDE_LAYERS_6, 'visible');
     const p6 = LOE_PANELS[6];
     const panel = document.getElementById('loe-panel');
     panel.style.display = 'block';
-    panel.style.borderColor = 'rgba(255,60,60,0.25)';
+    panel.style.borderColor = 'rgba(255,85,0,0.25)';
     panel.innerHTML = p6.html;
     document.getElementById('legend6').style.display = 'block';
-    map.flyTo({ center: [60.0, 14.0], zoom: 3.2, pitch: 0, bearing: 0, duration: 1300 });
+    map.flyTo({ center: [52.0, 34.0], zoom: 5.0, pitch: 0, bearing: 0, duration: 1300 });
 
   } else if (n === 7) {
     getSlide7Markers().forEach(m => m.getElement().style.display = '');
@@ -2525,12 +2762,23 @@ function showSlide(n) {
     panel.innerHTML = p7.html;
     document.getElementById('legend7').style.display = 'block';
     map.flyTo({ center: [44.0, 28.0], zoom: 4.0, pitch: 0, bearing: 0, duration: 1300 });
+
+  } else if (n === 8) {
+    getSlide8Markers().forEach(m => m.getElement().style.display = '');
+    setLayerVisibility(SLIDE_LAYERS_8, 'visible');
+    const p8 = LOE_PANELS[8];
+    const panel = document.getElementById('loe-panel');
+    panel.style.display = 'block';
+    panel.style.borderColor = 'rgba(255,60,60,0.25)';
+    panel.innerHTML = p8.html;
+    document.getElementById('legend8').style.display = 'block';
+    map.flyTo({ center: [60.0, 14.0], zoom: 3.2, pitch: 0, bearing: 0, duration: 1300 });
   }
 }
 
 // Keyboard nav
 document.addEventListener('keydown', e => {
-  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') showSlide(Math.min(currentSlide + 1, 7));
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') showSlide(Math.min(currentSlide + 1, 8));
   if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   showSlide(Math.max(currentSlide - 1, 1));
 });
 </script>
