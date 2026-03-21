@@ -1,0 +1,1867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IRAN // TACTICAL OVERVIEW</title>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Share Tech Mono', monospace;
+      background: #050810;
+      overflow: hidden;
+    }
+
+    #map { position: fixed; inset: 0; }
+
+    /* scanlines */
+    #scanlines {
+      position: fixed; inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px, transparent 3px,
+        rgba(0,0,0,0.05) 3px, rgba(0,0,0,0.05) 4px
+      );
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    /* vignette */
+    #vignette {
+      position: fixed; inset: 0;
+      background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.7) 100%);
+      pointer-events: none;
+      z-index: 99;
+    }
+
+    /* ── HEADER ── */
+    #header {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 200;
+      padding: 14px 20px 12px;
+      background: linear-gradient(to bottom, rgba(5,8,16,0.97) 70%, transparent);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1px solid rgba(0,255,136,0.12);
+    }
+
+    .h-class {
+      font-family: 'Orbitron', monospace;
+      font-size: 8px;
+      letter-spacing: 5px;
+      color: #ff3030;
+      margin-bottom: 4px;
+    }
+
+    .h-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: 10px;
+      color: #00ff88;
+      text-shadow: 0 0 30px rgba(0,255,136,0.35), 0 0 60px rgba(0,255,136,0.1);
+      line-height: 1;
+    }
+
+    .h-sub {
+      font-size: 9px;
+      letter-spacing: 4px;
+      color: rgba(0,255,136,0.4);
+      margin-top: 5px;
+    }
+
+    .h-right {
+      text-align: right;
+      font-size: 10px;
+      color: rgba(0,255,136,0.4);
+      line-height: 2;
+    }
+
+    .live-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 6px;
+      color: #ff3030;
+      font-size: 10px;
+      margin-bottom: 2px;
+    }
+
+    .blink {
+      display: inline-block;
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #ff3030;
+      animation: blink 1.2s infinite;
+    }
+
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.1} }
+
+    /* corner brackets */
+    .bracket {
+      position: fixed;
+      width: 22px; height: 22px;
+      z-index: 201;
+    }
+    .bracket.tl { top: 72px; left: 0; border-top: 1px solid rgba(0,255,136,0.3); border-left: 1px solid rgba(0,255,136,0.3); }
+    .bracket.tr { top: 72px; right: 0; border-top: 1px solid rgba(0,255,136,0.3); border-right: 1px solid rgba(0,255,136,0.3); }
+    .bracket.bl { bottom: 0; left: 0; border-bottom: 1px solid rgba(0,255,136,0.3); border-left: 1px solid rgba(0,255,136,0.3); }
+    .bracket.br { bottom: 0; right: 0; border-bottom: 1px solid rgba(0,255,136,0.3); border-right: 1px solid rgba(0,255,136,0.3); }
+
+    /* ── COUNTS (top-left panel) ── */
+    #counts {
+      position: fixed;
+      top: 86px; left: 18px;
+      z-index: 200;
+      background: rgba(5,8,16,0.88);
+      border: 1px solid rgba(0,255,136,0.2);
+      padding: 12px 14px;
+      font-size: 10px;
+      color: rgba(0,255,136,0.4);
+      line-height: 2.2;
+    }
+
+    .cnt-row { display: flex; align-items: center; gap: 10px; }
+    .cnt-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+    .cnt-val {
+      font-family: 'Orbitron', monospace;
+      font-size: 13px;
+      color: rgba(0,255,136,0.65);
+      display: inline-block;
+      width: 28px;
+      text-align: right;
+    }
+
+    /* ── LEGEND ── */
+    #legend {
+      position: fixed;
+      bottom: 28px; left: 18px;
+      z-index: 200;
+      background: rgba(5,8,16,0.9);
+      border: 1px solid rgba(0,255,136,0.2);
+      padding: 14px 16px;
+    }
+
+    .leg-head {
+      font-family: 'Orbitron', monospace;
+      font-size: 8px;
+      letter-spacing: 4px;
+      color: rgba(0,255,136,0.35);
+      margin-bottom: 11px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(0,255,136,0.12);
+    }
+
+    .leg-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 8px 0;
+      font-size: 11px;
+      color: rgba(0,255,136,0.7);
+    }
+
+    .leg-icon {
+      width: 24px; height: 24px;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ── MODAL BACKDROP ── */
+    #modal-backdrop {
+      position: fixed; inset: 0;
+      z-index: 300;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(2px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    #modal-backdrop.open { display: flex; }
+
+    /* ── MODAL CARD ── */
+    #info {
+      position: relative;
+      width: 480px;
+      max-width: 92vw;
+      background: rgba(5,8,16,0.97);
+      border: 1px solid rgba(0,255,136,0.3);
+      box-shadow: 0 0 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(0,255,136,0.05);
+      animation: modalIn 0.2s ease;
+    }
+
+    @keyframes modalIn {
+      from { opacity:0; transform: scale(0.96) translateY(8px); }
+      to   { opacity:1; transform: scale(1) translateY(0); }
+    }
+
+    .modal-accent {
+      height: 3px;
+      width: 100%;
+    }
+
+    .modal-body {
+      padding: 22px 24px 24px;
+    }
+
+    .info-close {
+      position: absolute; top: 14px; right: 16px;
+      cursor: pointer;
+      color: rgba(0,255,136,0.3);
+      font-size: 14px;
+      transition: color 0.15s;
+      z-index: 1;
+    }
+    .info-close:hover { color: #00ff88; }
+
+    .info-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .info-icon {
+      flex-shrink: 0;
+      margin-top: 2px;
+      filter: drop-shadow(0 0 8px var(--accent));
+    }
+
+    .info-titles { flex: 1; }
+
+    .info-cat {
+      font-size: 8px;
+      letter-spacing: 4px;
+      margin-bottom: 6px;
+    }
+
+    .info-name {
+      font-family: 'Orbitron', monospace;
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.3;
+      padding-right: 24px;
+    }
+
+    .info-coord {
+      font-size: 10px;
+      color: rgba(0,255,136,0.35);
+      letter-spacing: 2px;
+      margin-top: 5px;
+    }
+
+    .info-divider {
+      border: none;
+      border-top: 1px solid rgba(0,255,136,0.1);
+      margin: 0 0 16px;
+    }
+
+    .info-desc {
+      font-size: 12px;
+      color: rgba(0,255,136,0.72);
+      line-height: 1.75;
+    }
+
+    /* ── SLIDE NAV ── */
+    #slide-nav {
+      position: fixed;
+      bottom: 28px;
+      left: 50%; transform: translateX(-50%);
+      z-index: 200;
+      display: flex;
+      gap: 6px;
+    }
+
+    .slide-btn {
+      font-family: 'Orbitron', monospace;
+      font-size: 8px;
+      letter-spacing: 3px;
+      padding: 8px 14px;
+      background: rgba(5,8,16,0.9);
+      border: 1px solid rgba(0,255,136,0.2);
+      color: rgba(0,255,136,0.35);
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .slide-btn:hover { border-color: rgba(0,255,136,0.55); color: rgba(0,255,136,0.75); }
+    .slide-btn.active {
+      border-color: rgba(0,255,136,0.65);
+      color: #00ff88;
+      background: rgba(0,255,136,0.07);
+      text-shadow: 0 0 10px rgba(0,255,136,0.35);
+    }
+
+    /* ── SLIDE 2 LEGEND ── */
+    #legend2 {
+      position: fixed;
+      bottom: 28px; left: 18px;
+      z-index: 200;
+      background: rgba(5,8,16,0.9);
+      border: 1px solid rgba(50,120,220,0.3);
+      padding: 14px 16px;
+      display: none;
+    }
+
+    .leg2-head {
+      font-family: 'Orbitron', monospace;
+      font-size: 8px;
+      letter-spacing: 4px;
+      color: rgba(80,160,255,0.5);
+      margin-bottom: 11px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(50,120,220,0.15);
+    }
+
+    .leg2-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 7px 0;
+      font-size: 11px;
+      color: rgba(200,220,255,0.7);
+    }
+
+    .nato-swatch {
+      width: 22px; height: 14px;
+      background: rgba(0,82,163,0.45);
+      border: 1px solid rgba(0,82,163,0.8);
+      flex-shrink: 0;
+    }
+
+    .strike-swatch {
+      width: 32px; height: 3px;
+      background: linear-gradient(to right, rgba(255,60,60,0.4), #ff4040);
+      flex-shrink: 0;
+    }
+
+    .co-swatch {
+      width: 22px; height: 22px;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ── SLIDE 3 LEGEND ── */
+    #legend3 {
+      position: fixed;
+      bottom: 28px; left: 18px;
+      z-index: 200;
+      background: rgba(5,8,16,0.9);
+      border: 1px solid rgba(255,200,80,0.25);
+      padding: 14px 16px;
+      display: none;
+      max-width: 200px;
+    }
+
+    .leg3-head {
+      font-family: 'Orbitron', monospace;
+      font-size: 8px;
+      letter-spacing: 4px;
+      color: rgba(255,200,80,0.45);
+      margin-bottom: 11px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255,200,80,0.15);
+    }
+
+    .leg3-row {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin: 7px 0;
+      font-size: 11px;
+      color: rgba(220,220,220,0.7);
+    }
+
+    .eth-swatch {
+      width: 14px; height: 14px;
+      flex-shrink: 0;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    /* ── SLIDE 4 LEGEND ── */
+    #legend4 {
+      position: fixed;
+      bottom: 28px; left: 18px;
+      z-index: 200;
+      background: rgba(5,8,16,0.9);
+      border: 1px solid rgba(0,200,255,0.22);
+      padding: 14px 16px;
+      display: none;
+      min-width: 230px;
+    }
+
+    .leg4-head {
+      font-family: 'Orbitron', monospace;
+      font-size: 8px;
+      letter-spacing: 4px;
+      color: rgba(0,200,255,0.45);
+      margin-bottom: 11px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(0,200,255,0.15);
+    }
+
+    .leg4-cat {
+      font-family: 'Orbitron', monospace;
+      font-size: 8px;
+      letter-spacing: 3px;
+      margin: 10px 0 4px;
+    }
+
+    .leg4-row {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin: 4px 0;
+      font-size: 10px;
+      color: rgba(220,220,220,0.65);
+    }
+
+    .leg4-dash {
+      width: 26px; height: 0;
+      border-top-width: 1.5px;
+      border-top-style: dashed;
+      flex-shrink: 0;
+    }
+
+    .range-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 1px;
+      pointer-events: none;
+      white-space: nowrap;
+      padding: 1px 6px;
+      background: rgba(5,8,16,0.82);
+    }
+
+    /* Province label markers */
+    .prov-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-align: center;
+      pointer-events: none;
+      white-space: nowrap;
+      text-shadow: 0 0 8px rgba(0,0,0,1), 0 0 16px rgba(0,0,0,0.9);
+    }
+
+    .prov-label .prov-name {
+      font-family: 'Orbitron', monospace;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      display: block;
+    }
+
+    .prov-label .prov-eth {
+      font-size: 8px;
+      opacity: 0.7;
+      display: block;
+      margin-top: 2px;
+    }
+
+    /* ── COALITION MARKERS ── */
+    .co-mk {
+      cursor: pointer;
+      transition: filter 0.2s, transform 0.2s;
+    }
+    .co-mk:hover { filter: brightness(1.5) !important; transform: scale(1.2); }
+
+    .strike-label {
+      font-family: 'Orbitron', monospace;
+      font-size: 9px;
+      letter-spacing: 1px;
+      color: rgba(255,80,80,0.9);
+      text-shadow: 0 0 10px rgba(255,0,0,0.6), 0 0 20px rgba(0,0,0,1);
+      pointer-events: none;
+      white-space: nowrap;
+      padding: 2px 6px;
+      background: rgba(5,8,16,0.75);
+      border-left: 2px solid rgba(255,60,60,0.8);
+    }
+
+    /* ── COORD BAR ── */
+    #coordbar {
+      position: fixed;
+      bottom: 8px;
+      left: 50%; transform: translateX(-50%);
+      z-index: 200;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: rgba(0,255,136,0.28);
+    }
+
+    /* ── TOKEN WARNING ── */
+    #token-warn {
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      z-index: 999;
+      background: rgba(5,8,16,0.97);
+      border: 1px solid #ff3030;
+      padding: 28px 36px;
+      text-align: center;
+      max-width: 460px;
+    }
+    #token-warn h2 {
+      font-family: 'Orbitron', monospace;
+      color: #ff3030;
+      letter-spacing: 4px;
+      margin-bottom: 14px;
+      font-size: 14px;
+    }
+    #token-warn p {
+      font-size: 12px;
+      color: rgba(0,255,136,0.75);
+      line-height: 1.8;
+    }
+    #token-warn code {
+      background: rgba(0,255,136,0.1);
+      padding: 2px 6px;
+      color: #00ff88;
+    }
+
+    /* ── MAP MARKERS ── */
+    .mk {
+      cursor: pointer;
+      transition: filter 0.2s, transform 0.2s;
+    }
+    .mk:hover {
+      filter: brightness(1.5) !important;
+      transform: scale(1.3);
+    }
+
+    .country-label {
+      font-family: 'Orbitron', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: rgba(200,200,210,0.5);
+      text-shadow: 0 0 10px rgba(0,0,0,1), 0 0 20px rgba(0,0,0,0.9);
+      pointer-events: none;
+      white-space: nowrap;
+      text-align: center;
+    }
+
+    .water-label {
+      font-family: 'Orbitron', monospace;
+      font-size: 9px;
+      letter-spacing: 4px;
+      color: rgba(80,160,255,0.5);
+      text-shadow: 0 0 10px rgba(0,0,0,0.95);
+      pointer-events: none;
+      white-space: nowrap;
+      text-align: center;
+      font-style: italic;
+    }
+
+    .geo-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: rgba(180,160,120,0.45);
+      text-shadow: 0 0 8px rgba(0,0,0,0.9);
+      pointer-events: none;
+      white-space: nowrap;
+      text-align: center;
+    }
+
+    .city-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.4);
+      border: 1px solid rgba(255,255,255,0.6);
+      box-shadow: 0 0 6px rgba(255,255,255,0.3);
+    }
+
+    .city-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      color: rgba(255,255,255,0.4);
+      text-shadow: 0 0 8px rgba(0,0,0,0.9);
+      pointer-events: none;
+      white-space: nowrap;
+      margin-left: 8px;
+    }
+
+    .city-wrap {
+      display: flex;
+      align-items: center;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+<div id="map"></div>
+<div id="scanlines"></div>
+<div id="vignette"></div>
+
+<!-- TOKEN WARNING (hidden if token is set) -->
+<div id="token-warn" style="display:none">
+  <h2>MAPBOX TOKEN REQUIRED</h2>
+  <p>
+    Open <code>iran-tactical.html</code> and replace<br>
+    <code>YOUR_MAPBOX_TOKEN_HERE</code><br>
+    with your Mapbox public token from<br>
+    <code>account.mapbox.com</code>
+  </p>
+</div>
+
+<div id="header">
+  <div>
+    <div class="h-class">// OPEN SOURCE INTELLIGENCE // OSINT // UNCLASSIFIED //</div>
+    <div class="h-title">IRAN TACTICAL</div>
+    <div class="h-sub">STRATEGIC MILITARY &amp; NUCLEAR INFRASTRUCTURE — REGIONAL OVERVIEW</div>
+  </div>
+  <div class="h-right">
+    <div class="live-row"><span class="blink"></span> SYSTEM ACTIVE</div>
+    <div id="utctime">---- -- -- --:--:-- UTC</div>
+    <div>DATUM: WGS84 / MERCATOR</div>
+    <div>SOURCE: OSINT / PUBLIC DOMAIN</div>
+  </div>
+</div>
+
+<div class="bracket tl"></div>
+<div class="bracket tr"></div>
+<div class="bracket bl"></div>
+<div class="bracket br"></div>
+
+<!-- Installation counts -->
+<div id="counts">
+  <div class="cnt-row"><span class="cnt-dot" style="background:#ffcc00"></span><span class="cnt-val" id="cnt-airbase">00</span>&nbsp; AIR BASES</div>
+  <div class="cnt-row"><span class="cnt-dot" style="background:#00d4ff"></span><span class="cnt-val" id="cnt-naval">00</span>&nbsp; NAVAL BASES</div>
+  <div class="cnt-row"><span class="cnt-dot" style="background:#ff3a3a"></span><span class="cnt-val" id="cnt-nuclear">00</span>&nbsp; NUCLEAR SITES</div>
+  <div class="cnt-row"><span class="cnt-dot" style="background:#ff8c00"></span><span class="cnt-val" id="cnt-irgc">00</span>&nbsp; IRGC / MISSILE</div>
+  <div class="cnt-row"><span class="cnt-dot" style="background:#cc77ff"></span><span class="cnt-val" id="cnt-strategic">00</span>&nbsp; STRATEGIC</div>
+</div>
+
+<!-- Legend -->
+<div id="legend">
+  <div class="leg-head">INSTALLATION KEY</div>
+  <div class="leg-row"><div class="leg-icon" id="leg-airbase"></div>Air Base / Tactical Fighter</div>
+  <div class="leg-row"><div class="leg-icon" id="leg-naval"></div>Naval Base / Port</div>
+  <div class="leg-row"><div class="leg-icon" id="leg-nuclear"></div>Nuclear Facility</div>
+  <div class="leg-row"><div class="leg-icon" id="leg-irgc"></div>IRGC / Missile Base</div>
+  <div class="leg-row"><div class="leg-icon" id="leg-strategic"></div>Strategic Location</div>
+</div>
+
+<!-- Modal -->
+<div id="modal-backdrop" onclick="closeInfo()">
+  <div id="info" onclick="event.stopPropagation()">
+    <div class="modal-accent" id="modal-accent"></div>
+    <div class="modal-body">
+      <span class="info-close" onclick="closeInfo()">✕</span>
+      <div class="info-header">
+        <div class="info-icon" id="info-icon"></div>
+        <div class="info-titles">
+          <div class="info-cat" id="info-cat"></div>
+          <div class="info-name" id="info-name"></div>
+          <div class="info-coord" id="info-coord"></div>
+        </div>
+      </div>
+      <hr class="info-divider">
+      <div class="info-desc" id="info-desc"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3 legend -->
+<div id="legend3">
+  <div class="leg3-head">ETHNIC / STRATEGIC KEY</div>
+  <div class="leg3-row"><div class="eth-swatch" style="background:rgba(245,166,35,0.55)"></div>Kurdish</div>
+  <div class="leg3-row"><div class="eth-swatch" style="background:rgba(74,144,217,0.55)"></div>Azerbaijani (Azeri)</div>
+  <div class="leg3-row"><div class="eth-swatch" style="background:rgba(80,210,140,0.55)"></div>Arab (Khuzestan)</div>
+  <div class="leg3-row"><div class="eth-swatch" style="background:rgba(189,16,224,0.55)"></div>Baloch</div>
+  <div class="leg3-row"><div class="eth-swatch" style="background:rgba(255,100,100,0.55)"></div>Strategic / Mixed</div>
+</div>
+
+<!-- Slide 4 legend -->
+<div id="legend4">
+  <div class="leg4-head">RANGE FANS // IRAN ARSENAL</div>
+
+  <div class="leg4-cat" style="color:rgba(255,60,60,0.7)">BALLISTIC MISSILES</div>
+  <div class="leg4-row"><div class="leg4-dash" style="border-color:#ff3333"></div>300 km — Fateh-110</div>
+  <div class="leg4-row"><div class="leg4-dash" style="border-color:#ff3333"></div>750 km — Qiam-1</div>
+  <div class="leg4-row"><div class="leg4-dash" style="border-color:#ff3333"></div>1,500 km — Emad / Ghadr</div>
+  <div class="leg4-row"><div class="leg4-dash" style="border-color:#ff3333"></div>2,000 km — Sejjil-2</div>
+  <div class="leg4-row"><div class="leg4-dash" style="border-color:#ff8888;border-top-style:solid"></div><span style="color:#ff8888;font-weight:bold">2,000 km — Khorramshahr-4 Kheibar <span style="color:#ff6060">[MIRV]</span></span></div>
+
+  <div class="leg4-cat" style="color:rgba(255,180,40,0.7)">CRUISE MISSILES</div>
+  <div class="leg4-row"><div class="leg4-dash" style="border-color:#ffaa22"></div>700 km — Ya Ali</div>
+  <div class="leg4-row"><div class="leg4-dash" style="border-color:#ffaa22"></div>1,350 km — Soumar / Hoveizeh</div>
+
+  <div class="leg4-cat" style="color:rgba(0,210,255,0.7)">DRONES / UAS</div>
+  <div class="leg4-row"><div class="leg4-dash" style="border-color:#00ddff"></div>200 km — Mohajer-6</div>
+  <div class="leg4-row"><div class="leg4-dash" style="border-color:#00ddff"></div>700 km — Karrar</div>
+  <div class="leg4-row"><div class="leg4-dash" style="border-color:#00ddff"></div>1,700 km — Shahed-129</div>
+  <div class="leg4-row"><div class="leg4-dash" style="border-color:#00ddff"></div>2,500 km — Shahed-136</div>
+</div>
+
+<!-- Slide 2 legend -->
+<div id="legend2">
+  <div class="leg2-head">SLIDE 02 // KEY</div>
+  <div class="leg2-row"><div class="nato-swatch"></div>NATO Member State</div>
+  <div class="leg2-row">
+    <div style="display:flex;align-items:center;gap:4px">
+      <div class="strike-swatch" style="height:6px;width:28px"></div>
+      <div class="strike-swatch" style="height:3px;width:22px"></div>
+      <div class="strike-swatch" style="height:1.5px;width:14px"></div>
+    </div>
+    Iranian Strikes (width = scale)
+  </div>
+  <div class="leg2-row"><div class="co-swatch" id="leg2-us"></div>US Military Base</div>
+  <div class="leg2-row"><div class="co-swatch" id="leg2-uk"></div>UK / Allied Base</div>
+  <div class="leg2-row"><div class="co-swatch" id="leg2-il"></div>Israeli Air Base</div>
+</div>
+
+<!-- Slide nav -->
+<div id="slide-nav">
+  <button class="slide-btn active" onclick="showSlide(1)">01 // INSTALLATIONS</button>
+  <button class="slide-btn"        onclick="showSlide(2)">02 // REGIONAL STRIKES</button>
+  <button class="slide-btn"        onclick="showSlide(3)">03 // INTERNAL REGIONS</button>
+  <button class="slide-btn"        onclick="showSlide(4)">04 // RANGE FANS</button>
+</div>
+
+<!-- Coordinate tracker -->
+<div id="coordbar">LAT ———————  |  LON ———————</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+//  CONFIG — replace with your Mapbox public token
+// ══════════════════════════════════════════════════════════
+const MAPBOX_TOKEN = 'pk.eyJ1IjoiaXNhYWNsdW1wa2lucyIsImEiOiJjajNhdTVlZXMwMGFnMzJvNzdoemQ0N3phIn0.hv3Atoq7kaBU9F-YCBGBOw'
+
+// ══════════════════════════════════════════════════════════
+//  COLOR + LABEL MAPS
+// ══════════════════════════════════════════════════════════
+const COLORS = {
+  airbase:   '#ffcc00',
+  naval:     '#00d4ff',
+  nuclear:   '#ff3a3a',
+  irgc:      '#ff8c00',
+  strategic: '#cc77ff',
+};
+
+const LABELS = {
+  airbase:   'AIR BASE / TACTICAL FIGHTER',
+  naval:     'NAVAL BASE / PORT',
+  nuclear:   'NUCLEAR FACILITY',
+  irgc:      'IRGC / MISSILE BASE',
+  strategic: 'STRATEGIC LOCATION',
+};
+
+// ══════════════════════════════════════════════════════════
+//  INSTALLATION DATA
+// ══════════════════════════════════════════════════════════
+const LOCATIONS = [
+
+  // ── AIR BASES ──────────────────────────────────────────
+  {
+    type:'airbase', name:'Mehrabad IAP / 11th TFB', lat:35.6892, lng:51.3130,
+    desc:'Primary air defense base guarding Tehran. Home to F-14A Tomcats and F-4E Phantom IIs. Dual-use civilian/military. Commands air approaches to the capital.'
+  },
+  {
+    type:'airbase', name:'Shahrokhi AB — Hamadan', lat:34.8690, lng:48.5530,
+    desc:'Major western tactical air base. Covers Iraqi and Kurdish frontiers. Russian Tu-95 bombers transited here in 2016 for Syrian strikes — first such use of Iranian territory since WWII.'
+  },
+  {
+    type:'airbase', name:'Tabriz AB', lat:38.1339, lng:46.2358,
+    desc:'Northernmost major air base. Covers the Azerbaijan, Armenian, and Turkish frontiers. MiG-29 and F-7M operations. Strategic position in the Caucasus approach.'
+  },
+  {
+    type:'airbase', name:'8th Tactical Fighter Base — Isfahan', lat:32.6271, lng:51.6613,
+    desc:"One of Iran's largest and most capable air bases. Central position allows rapid redeployment across all theaters. F-14A Tomcat and Su-24 Fencer operations. Adjacent to major maintenance facilities."
+  },
+  {
+    type:'airbase', name:'Bandar Abbas AB', lat:27.2183, lng:56.3778,
+    desc:'Critical southern air base overlooking the Strait of Hormuz. Coordinates directly with IRIN fleet headquarters across the bay. First-response base for Gulf interdiction missions.'
+  },
+  {
+    type:'airbase', name:'Shiraz AB (7th TFB)', lat:29.5392, lng:52.5898,
+    desc:'Major multi-role base in Fars province. F-4E Phantom II, C-130 Hercules, and P-3 Orion maritime patrol operations. Southern approach coverage.'
+  },
+  {
+    type:'airbase', name:'Bushehr AB', lat:28.9448, lng:50.8346,
+    desc:'Coastal base co-located with nuclear power plant. Persian Gulf patrol and maritime strike missions. Sensitive dual-use proximity to nuclear infrastructure.'
+  },
+  {
+    type:'airbase', name:'Vahdati AB — Dezful', lat:32.4342, lng:48.3972,
+    desc:'Western sector air base near Iraqi border. Played a major role in Iran-Iraq War. Su-24MK strike aircraft. Deep-strike mission capable.'
+  },
+  {
+    type:'airbase', name:'Ahvaz AB', lat:31.3374, lng:48.7620,
+    desc:"Khuzestan province tactical base. Vital to defense of Iran's oil-rich southwestern region. Close air support and border patrol roles."
+  },
+  {
+    type:'airbase', name:'Mashhad / Shahid Hashemi-Nejad AB', lat:36.2352, lng:59.6410,
+    desc:"Primary northeastern base near Afghan and Turkmen borders. Long-range surveillance coverage across Central Asia. Supports Iran's eastern flank."
+  },
+  {
+    type:'airbase', name:'Omidiyeh AB', lat:30.8350, lng:49.5330,
+    desc:'Air base in Khuzestan province. Operated jointly by IRIAF and IRGC Aerospace Force. Logistics hub for southwestern theater.'
+  },
+  {
+    type:'airbase', name:'Chabahar AB', lat:25.4433, lng:60.3822,
+    desc:"Southeasternmost air base on the Gulf of Oman coast. Monitors Indian Ocean approaches and Arabian Sea. Extends Iran's maritime surveillance reach significantly."
+  },
+  {
+    type:'airbase', name:'Khatami AB — Ardestan', lat:33.4360, lng:52.3475,
+    desc:"Major overhaul and maintenance base for IRIAF F-14 Tomcats and other advanced aircraft. Iran's primary depot-level aircraft maintenance facility."
+  },
+
+  // ── NAVAL BASES ─────────────────────────────────────────
+  {
+    type:'naval', name:'Bandar Abbas — IRIN HQ', lat:27.1865, lng:56.2808,
+    desc:"Main fleet headquarters of the Islamic Republic of Iran Navy (IRIN). Home to frigates, Kilo-class submarines, and mine warfare vessels. Commands the Strait of Hormuz. Iran's most strategically vital naval installation."
+  },
+  {
+    type:'naval', name:'Bushehr Naval Base', lat:28.9764, lng:50.8347,
+    desc:'Major Persian Gulf naval base. Hovercraft, fast attack craft, and anti-ship missile boats stationed here. Primary base for northwestern Gulf operations.'
+  },
+  {
+    type:'naval', name:'Bandar Anzali — Caspian Fleet', lat:37.4685, lng:49.4620,
+    desc:"Iran's primary Caspian Sea naval base. Operates corvettes and patrol vessels on the Caspian. Strategically positioned to monitor Russian and Azerbaijani Caspian activities."
+  },
+  {
+    type:'naval', name:'Jask Naval Base', lat:25.6447, lng:57.7680,
+    desc:"Newly expanded strategic base east of the Strait of Hormuz on the Gulf of Oman. Designed to project power into the Arabian Sea and block US carrier access. Iran's forward strategic naval outpost."
+  },
+  {
+    type:'naval', name:'Bandar Mahshahr', lat:30.5590, lng:49.1980,
+    desc:"Naval base in Khuzestan covering northwest Persian Gulf. Guards approaches to Iran's major petrochemical port complex and the Arvand River."
+  },
+  {
+    type:'naval', name:'Larak Island IRGCN Base', lat:26.8500, lng:56.3700,
+    desc:'IRGC Navy base on Larak Island at the eastern Strait of Hormuz. Fast boat swarm capability and mining operations. Controls a key choke position in the Strait.'
+  },
+
+  // ── NUCLEAR FACILITIES ──────────────────────────────────
+  {
+    type:'nuclear', name:'Natanz FEUP', lat:33.7220, lng:51.7270,
+    desc:"Iran's primary uranium enrichment facility. Deep underground cascade halls house thousands of IR-1 through IR-6 centrifuges. Repeatedly sabotaged — Stuxnet worm (2010), electrical explosions (2020), drone strike (2021). IAEA monitored."
+  },
+  {
+    type:'nuclear', name:'Fordow FFEP', lat:34.8847, lng:50.9934,
+    desc:"Fordow Fuel Enrichment Plant buried ~80m underground inside a mountain near Qom. Designed specifically to survive airstrikes. Currently enriching uranium to 60% purity — close to weapons-grade. One of Iran's most hardened sites."
+  },
+  {
+    type:'nuclear', name:'Arak IR-40 Heavy Water Reactor', lat:34.0736, lng:49.1917,
+    desc:"Heavy water research reactor with plutonium production potential. Core filled with concrete under JCPOA (2016) to eliminate the weapons-grade plutonium pathway. Redesign underway. Adjacent heavy water production plant."
+  },
+  {
+    type:'nuclear', name:'Bushehr Nuclear Power Plant', lat:28.8297, lng:50.9103,
+    desc:"Iran's only operating nuclear power station. Russian-built VVER-1000 PWR producing 1,000 MW. Civilian power generation. Fuel supplied and spent fuel repatriated by Russia under strict safeguards."
+  },
+  {
+    type:'nuclear', name:'Isfahan Uranium Conversion Facility', lat:32.5280, lng:51.7210,
+    desc:"Uranium Conversion Facility (UCF). Converts uranium ore concentrate (yellowcake) to UF₆ gas for injection into enrichment centrifuges. Key node in the complete fuel cycle. Also produces UO₂ fuel pellets."
+  },
+  {
+    type:'nuclear', name:'Parchin Military Complex', lat:35.5228, lng:51.7830,
+    desc:"Large military-industrial complex southeast of Tehran. IAEA suspects past high-explosive testing relevant to nuclear weapon implosion design. Iran refused inspections. Site was partially razed and rebuilt in 2012 before inspectors arrived."
+  },
+  {
+    type:'nuclear', name:'Lavizan-Shian', lat:35.7686, lng:51.5272,
+    desc:"Former Physics Research Center within Tehran. Suspected early nuclear weapons program activities including laser isotope separation. Site demolished before IAEA inspection could occur. Raises significant non-proliferation concerns."
+  },
+  {
+    type:'nuclear', name:'Khondab Heavy Water Plant', lat:34.1560, lng:49.1490,
+    desc:"Heavy water production facility supplying the Arak IR-40 reactor. JCPOA required Iran to limit heavy water stockpiles. Continued operation monitored by IAEA."
+  },
+
+  // ── IRGC / MISSILE BASES ───────────────────────────────
+  {
+    type:'irgc', name:'IRGC Aerospace Force HQ — Tehran', lat:35.7150, lng:51.4050,
+    desc:"Command center for IRGC Aerospace Force. Controls Iran's ballistic missile arsenal, drone programs (Shahed series), and strategic rocket forces. Coordinates strikes across the region."
+  },
+  {
+    type:'irgc', name:'Imam Ali Missile Base — Khorramabad', lat:33.4958, lng:48.3560,
+    desc:"Major underground IRGC missile base in Zagros Mountains. Houses Shahab-3, Qiam, and Fateh-110 ballistic missiles. Primary western firing axis toward Israel, US bases in Iraq and Syria."
+  },
+  {
+    type:'irgc', name:'Shahid Hajj Qasem Missile Base', lat:28.8800, lng:57.7800,
+    desc:"Underground missile storage and launch complex in Kerman province. Southeastern launch axis covering the Arabian Peninsula, Gulf of Oman, and Arabian Sea approaches."
+  },
+  {
+    type:'irgc', name:'IRGC UAV Base — Kashan', lat:33.9800, lng:51.5700,
+    desc:"IRGC Aerospace Force drone operations hub near Natanz. Produces and operates Shahed-136 loitering munitions and Mohajer/Karrar UAVs. Suicide drone exports to Russia coordinated from this region."
+  },
+  {
+    type:'irgc', name:'Emad Missile Production — Parchin', lat:35.4800, lng:51.8400,
+    desc:"IRGC ballistic missile R&D and production complex. Associated with Emad, Shahab, and Sejjil solid-fuel missile programs. Underground tunnels house production lines and storage."
+  },
+
+  // ── STRATEGIC LOCATIONS ─────────────────────────────────
+  {
+    type:'strategic', name:'Kharg Island — Oil Terminal', lat:29.2333, lng:50.3167,
+    desc:"Iran's primary oil export terminal handling ~90% of crude oil exports. Approximately 2.5 million barrels per day capacity. Destruction would collapse Iranian oil revenues within weeks. Heavily fortified with SAM batteries and air defense."
+  },
+  {
+    type:'strategic', name:'Strait of Hormuz', lat:26.5940, lng:56.3000,
+    desc:"Critical global chokepoint at only 21 miles wide at its narrowest. ~20% of world petroleum and 25% of global LNG transits daily. Iran's supreme strategic leverage point — IRGCN maintains mine stockpiles, fast boat swarms, and shore-based anti-ship missiles all oriented here."
+  },
+  {
+    type:'strategic', name:'Qeshm Island', lat:26.7500, lng:56.0000,
+    desc:"Largest island in the Persian Gulf. Iranian military garrison and IRGCN base. Dominates eastern approach to the Strait of Hormuz. Free trade zone on northern shore masks dual-use infrastructure."
+  },
+  {
+    type:'strategic', name:'Abu Musa Island', lat:25.8667, lng:55.0333,
+    desc:"Disputed island occupied by Iran; UAE claims sovereignty. Iranian military garrison positioned to threaten southern Gulf shipping lanes. Seized unilaterally in 1971. Repeated source of regional tensions."
+  },
+  {
+    type:'strategic', name:'Kish Island', lat:26.5333, lng:53.9667,
+    desc:"Persian Gulf island free trade zone. SIGINT collection assets reported. Surveillance of Gulf maritime traffic. Iranian offshore banking and sanctions-circumvention hub."
+  },
+  {
+    type:'strategic', name:'Bandar Imam Khomeini — Oil Terminal', lat:30.4167, lng:49.0833,
+    desc:"Major petrochemical export hub and oil terminal in Khuzestan. Second key oil export node after Kharg. Adjacent to largest petrochemical complex in the Middle East."
+  },
+];
+
+// ══════════════════════════════════════════════════════════
+//  GEOGRAPHIC LABELS
+// ══════════════════════════════════════════════════════════
+const BORDER_LABELS = [
+  { name:'TURKEY',       lat:39.2,  lng:35.0  },
+  { name:'IRAQ',         lat:33.0,  lng:43.5  },
+  { name:'KUWAIT',       lat:29.3,  lng:47.5  },
+  { name:'SAUDI ARABIA', lat:24.0,  lng:44.5  },
+  { name:'UAE',          lat:24.0,  lng:53.5  },
+  { name:'OMAN',         lat:21.0,  lng:57.5  },
+  { name:'PAKISTAN',     lat:30.0,  lng:68.5  },
+  { name:'AFGHANISTAN',  lat:33.5,  lng:65.5  },
+  { name:'TURKMENISTAN', lat:39.5,  lng:59.5  },
+  { name:'AZERBAIJAN',   lat:40.5,  lng:47.5  },
+  { name:'ARMENIA',      lat:40.2,  lng:44.5  },
+];
+
+const WATER_LABELS = [
+  { name:'CASPIAN  SEA',  lat:42.0, lng:51.0 },
+  { name:'PERSIAN  GULF', lat:26.5, lng:51.0 },
+  { name:'GULF  OF  OMAN',lat:23.0, lng:58.5 },
+  { name:'ARABIAN  SEA',  lat:19.0, lng:62.0 },
+  { name:'RED  SEA',      lat:23.0, lng:37.5 },
+];
+
+const GEO_LABELS = [
+  { name:'ZAGROS MTS', lat:32.5, lng:47.5 },
+  { name:'ALBORZ MTS', lat:36.2, lng:52.0 },
+  { name:'DASHT-E KAVIR', lat:35.0, lng:54.0 },
+  { name:'DASHT-E LUT',   lat:30.5, lng:58.5 },
+  { name:'STR. OF HORMUZ', lat:26.35, lng:56.65 },
+];
+
+const CITIES = [
+  { name:'TEHRAN ★', lat:35.6892, lng:51.3890 },
+  { name:'ISFAHAN',  lat:32.6539, lng:51.6800 },
+  { name:'TABRIZ',   lat:38.0800, lng:46.3100 },
+  { name:'MASHHAD',  lat:36.2605, lng:59.6300 },
+  { name:'SHIRAZ',   lat:29.5918, lng:52.6000 },
+  { name:'AHVAZ',    lat:31.3203, lng:48.6900 },
+  { name:'BANDAR ABBAS', lat:27.1832, lng:56.2800 },
+  { name:'BUSHEHR',  lat:28.9234, lng:50.8400 },
+  { name:'QAZVIN',   lat:36.2792, lng:50.0050 },
+  { name:'KASHAN',   lat:33.9851, lng:51.4200 },
+  { name:'ARAK',     lat:34.0954, lng:49.7020 },
+  { name:'QOM',      lat:34.6416, lng:50.8800 },
+  { name:'DEZFUL',   lat:32.3771, lng:48.4200 },
+  { name:'HAMADAN',  lat:34.7988, lng:48.5200 },
+  { name:'KHORRAMABAD', lat:33.4878, lng:48.3600 },
+];
+
+// ══════════════════════════════════════════════════════════
+//  SVG ICON BUILDERS
+// ══════════════════════════════════════════════════════════
+function mkAirbase(c, s=26) {
+  return `<svg width="${s}" height="${s}" viewBox="0 0 26 26" xmlns="http://www.w3.org/2000/svg">
+    <line x1="13" y1="0" x2="13" y2="26" stroke="${c}" stroke-width="0.6" opacity="0.45"/>
+    <line x1="0" y1="13" x2="26" y2="13" stroke="${c}" stroke-width="0.6" opacity="0.45"/>
+    <polygon points="13,1 25,21 13,16 1,21" fill="rgba(0,0,0,0.3)" stroke="${c}" stroke-width="1.7" stroke-linejoin="round"/>
+    <circle cx="13" cy="13" r="2.5" fill="${c}"/>
+  </svg>`;
+}
+
+function mkNaval(c, s=26) {
+  return `<svg width="${s}" height="${s}" viewBox="0 0 26 26" xmlns="http://www.w3.org/2000/svg">
+    <line x1="13" y1="0" x2="13" y2="26" stroke="${c}" stroke-width="0.6" opacity="0.45"/>
+    <line x1="0" y1="13" x2="26" y2="13" stroke="${c}" stroke-width="0.6" opacity="0.45"/>
+    <rect x="5.5" y="5.5" width="15" height="15" fill="rgba(0,0,0,0.3)" stroke="${c}" stroke-width="1.7" transform="rotate(45 13 13)"/>
+    <circle cx="13" cy="13" r="2.5" fill="${c}"/>
+  </svg>`;
+}
+
+function mkNuclear(c, s=30) {
+  return `<svg width="${s}" height="${s}" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="15" cy="15" r="13" fill="rgba(0,0,0,0.3)" stroke="${c}" stroke-width="1.3" opacity="0.5"/>
+    <circle cx="15" cy="15" r="3.5" fill="${c}"/>
+    <path d="M15,11.5 L9,1.8 A13,13 0 0 1 21,1.8 Z" fill="${c}" opacity="0.8"/>
+    <path d="M18.5,17 L28.2,22 A13,13 0 0 1 22.2,28.5 Z" fill="${c}" opacity="0.8"/>
+    <path d="M11.5,17 L1.8,22 A13,13 0 0 1 7.8,28.5 Z" fill="${c}" opacity="0.8"/>
+  </svg>`;
+}
+
+function mkIRGC(c, s=26) {
+  return `<svg width="${s}" height="${s}" viewBox="0 0 26 26" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="13,1 25,8 25,18 13,25 1,18 1,8" fill="rgba(0,0,0,0.3)" stroke="${c}" stroke-width="1.7" stroke-linejoin="round"/>
+    <line x1="13" y1="6" x2="13" y2="10" stroke="${c}" stroke-width="2"/>
+    <circle cx="13" cy="13" r="2.5" fill="${c}"/>
+    <line x1="13" y1="16" x2="13" y2="20" stroke="${c}" stroke-width="2"/>
+  </svg>`;
+}
+
+function mkStrategic(c, s=26) {
+  return `<svg width="${s}" height="${s}" viewBox="0 0 26 26" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="13,1 16,9 24,9 18,15 21,23 13,18 5,23 8,15 2,9 10,9" fill="rgba(0,0,0,0.3)" stroke="${c}" stroke-width="1.7" stroke-linejoin="round"/>
+    <circle cx="13" cy="13" r="2" fill="${c}"/>
+  </svg>`;
+}
+
+const ICON_FNS = {
+  airbase:   mkAirbase,
+  naval:     mkNaval,
+  nuclear:   mkNuclear,
+  irgc:      mkIRGC,
+  strategic: mkStrategic,
+};
+
+// ══════════════════════════════════════════════════════════
+//  SLIDE STATE
+// ══════════════════════════════════════════════════════════
+let currentSlide = 1;
+const installationMarkers = [];   // slide 1
+const coalitionMarkers    = [];   // slide 2
+
+// ══════════════════════════════════════════════════════════
+//  SLIDE 2 DATA
+// ══════════════════════════════════════════════════════════
+const IRAN_ORIGIN = [53.0, 33.0];
+
+// ══════════════════════════════════════════════════════════
+//  SLIDE 4 DATA — RANGE FANS
+// ══════════════════════════════════════════════════════════
+const IRAN_CENTER_LNG = 53.7;
+const IRAN_CENTER_LAT = 32.5;
+
+const RANGE_CATEGORIES = [
+  {
+    id: 'ballistic',
+    label: 'BALLISTIC MISSILES',
+    color: '#ff3333',
+    systems: [
+      { name: 'Fateh-110',                     range: 300  },
+      { name: 'Qiam-1',                         range: 750  },
+      { name: 'Emad / Ghadr',                   range: 1500 },
+      { name: 'Sejjil-2',                        range: 2000 },
+      { name: 'Khorramshahr-4 Kheibar',          range: 2000, mirv: true, labelBearing: 315 },
+    ],
+  },
+  {
+    id: 'cruise',
+    label: 'CRUISE MISSILES',
+    color: '#ffaa22',
+    systems: [
+      { name: 'Ya Ali',              range: 700  },
+      { name: 'Soumar / Hoveizeh',   range: 1350 },
+    ],
+  },
+  {
+    id: 'drone',
+    label: 'DRONES / UAS',
+    color: '#00ddff',
+    systems: [
+      { name: 'Mohajer-6',           range: 200  },
+      { name: 'Karrar',              range: 700  },
+      { name: 'Shahed-129',          range: 1700 },
+      { name: 'Shahed-136',          range: 2500 },
+    ],
+  },
+];
+
+const STRIKES = [
+  { name:'UAE',          to:[54.50, 24.30], count:2001, label:'~2,001' },
+  { name:'Israel',       to:[34.85, 31.05], count:1000, label:'~1,000' },
+  { name:'Kuwait',       to:[47.98, 29.38], count:380,  label:'~380'   },
+  { name:'Saudi Arabia', to:[46.72, 24.69], count:300,  label:'~300'   },
+  { name:'Jordan',       to:[37.37, 31.22], count:62,   label:'62'     },
+  { name:'Bahrain',      to:[50.56, 26.07], count:54,   label:'54'     },
+  { name:'Qatar',        to:[51.53, 25.29], count:28,   label:'28'     },
+  { name:'Iraq',         to:[44.37, 33.32], count:20,   label:'~20'    },
+  { name:'Turkey',       to:[32.86, 39.93], count:3,    label:'3'      },
+];
+
+const COALITION_BASES = [
+  { flag:'US', name:'Al Udeid AB',            lat:25.1167, lng:51.3150, desc:'Largest US base in the Middle East. AFCENT HQ. ~10,000 personnel. B-52H, F-15E, KC-135 ops. Iranian strike target.' },
+  { flag:'US', name:'NSA Bahrain / 5th Fleet',lat:26.2047, lng:50.5897, desc:'US 5th Fleet HQ. Commands all US naval forces in the Gulf, Red Sea, and Arabian Sea.' },
+  { flag:'US', name:'Camp Arifjan',           lat:29.1856, lng:48.0522, desc:'US Army Central HQ, Kuwait. ~13,000 troops. Patriot PAC-3 air defense batteries.' },
+  { flag:'US', name:'Ali Al Salem AB',        lat:29.5108, lng:47.6994, desc:'USAF tactical base, Kuwait. F/A-18 and A-10 operations. Key regional air support hub.' },
+  { flag:'US', name:'Al Dhafra AB',           lat:24.2428, lng:54.5476, desc:'UAE. F-22 Raptors, U-2 Dragon Lady, RQ-4 Global Hawk, KC-10 tankers. Premier ISR hub in the Gulf.' },
+  { flag:'US', name:'Prince Sultan AB',       lat:24.0626, lng:47.5804, desc:'Saudi Arabia. F-15E Strike Eagles, THAAD and Patriot batteries. Massively expanded in 2026.' },
+  { flag:'US', name:'Muwaffaq Salti AB',      lat:32.1564, lng:37.0319, desc:'Jordan. 332nd AEW. F-16s, MQ-9 Reapers. Forward staging base for Levant operations and Iran strikes.' },
+  { flag:'US', name:'Eskan Village AB',       lat:24.4890, lng:46.7220, desc:'Saudi Arabia near Riyadh. Logistics and support hub for USAF theater operations.' },
+  { flag:'UK', name:'RAF Akrotiri',           lat:34.5801, lng:32.9874, desc:'British sovereign base, Cyprus. Typhoon FGR4 ops. Coalition ISR hub. Staging point for long-range strikes on Iran.' },
+  { flag:'IL', name:'Nevatim AB',             lat:31.2082, lng:35.0125, desc:'Primary Israeli F-35I Adir base. Led initial Israeli strikes on Iran. Hit by Iranian ballistic missiles in retaliation.' },
+  { flag:'IL', name:'Tel Nof AB',             lat:31.8394, lng:34.8183, desc:'F-15I Ra\'am heavy strike base. Long-range platform for Iran missions. Home of 69th and 133rd Sqns.' },
+  { flag:'IL', name:'Ramon AB',               lat:30.7761, lng:34.6669, desc:'Negev F-16I Sufa base. Southern intercept and strike staging.' },
+  { flag:'IL', name:'Hatzerim AB',            lat:31.2327, lng:34.6604, desc:'IAF base in the Negev. F-16 operations, UAV squadrons.' },
+];
+
+const NATO_ISO3 = ['TUR', 'GRC'];
+
+// ══════════════════════════════════════════════════════════
+//  SLIDE 3 DATA — INTERNAL REGIONS
+// ══════════════════════════════════════════════════════════
+// Colors: Kurdish=#f5a623, Azeri=#4a90d9, Arab=#50d28c, Baloch=#bd10e0, Strategic=#ff6464
+const PROVINCES = [
+  {
+    id: 'w-azerbaijan', name: 'West Azerbaijan', capital: 'Urmia', labelLng: 45.1, labelLat: 37.8,
+    ethnicity: 'Kurdish + Azeri', color: '#4a90d9',
+    desc: 'Mixed Kurdish and Azerbaijani Turkic population. Borders Turkey, Iraq, Armenia, and Azerbaijan Republic. Significant PJAK (Kurdish militant) presence in border hills. Urmia Lake — once the world\'s 6th largest saltwater lake — has shrunk 80%, becoming a major environmental and displacement crisis.',
+    coords: [[44.05,37.2],[44.4,36.6],[45.3,36.6],[46.5,36.85],[47.1,37.3],[46.85,38.4],[46.1,39.2],[44.8,39.55],[44.05,38.8],[44.05,37.2]]
+  },
+  {
+    id: 'e-azerbaijan', name: 'East Azerbaijan', capital: 'Tabriz', labelLng: 47.3, labelLat: 38.0,
+    ethnicity: 'Azerbaijani (Azeri)', color: '#4a90d9',
+    desc: 'Majority Azerbaijani Turkic province. Home to Tabriz — Iran\'s 5th largest city and historic cultural capital of Iranian Azeris (~25% of Iran\'s population). Strong Azerbaijani cultural identity and cross-border ties to the Republic of Azerbaijan. Considered a potential irredentism flashpoint if the Iranian state weakens.',
+    coords: [[46.5,36.85],[47.3,36.6],[48.6,37.1],[49.1,37.9],[48.5,38.9],[47.5,39.75],[46.1,39.2],[46.85,38.4],[47.1,37.3],[46.5,36.85]]
+  },
+  {
+    id: 'kurdistan', name: 'Kurdistan', capital: 'Sanandaj', labelLng: 46.5, labelLat: 35.5,
+    ethnicity: 'Kurdish', color: '#f5a623',
+    desc: 'Kurdish-majority province. Among Iran\'s poorest. PJAK (Party of Free Life of Kurdistan) conducts cross-border operations from Iraqi Kurdistan. From 2010–2024, 97% of political executions in Iran were Kurds, Baluch, or Arabs. Heavily policed. Near-total shutdown during 2026 protests.',
+    coords: [[45.35,34.9],[46.2,34.65],[47.3,34.75],[47.95,35.3],[47.6,36.1],[46.9,36.55],[45.95,36.4],[45.15,35.75],[45.35,34.9]]
+  },
+  {
+    id: 'kermanshah', name: 'Kermanshah', capital: 'Kermanshah', labelLng: 47.0, labelLat: 34.3,
+    ethnicity: 'Kurdish / Mixed', color: '#f5a623',
+    desc: 'Predominantly Kurdish with Luri and Persian minorities. Borders Iraq. Home to the Imam Ali underground missile base — a major IRGC ballistic missile facility. Among the highest poverty rates in Iran. Significant protest activity in 2026.',
+    coords: [[45.3,33.7],[46.4,33.35],[47.6,33.4],[48.3,33.95],[48.1,35.0],[47.1,35.35],[46.0,35.3],[45.2,34.7],[45.3,33.7]]
+  },
+  {
+    id: 'ilam', name: 'Ilam', capital: 'Ilam', labelLng: 46.8, labelLat: 33.1,
+    ethnicity: 'Kurdish / Luri', color: '#f5a623',
+    desc: 'Small southwestern province on the Iraqi border. Kurdish and Luri population. Saw some of the deadliest state repression in the 2026 protests — at least 5 killed by security forces. Economically marginalized. Close to Iraq\'s Diyala region.',
+    coords: [[45.55,32.75],[46.5,32.35],[47.85,32.45],[48.1,33.1],[47.6,33.4],[46.4,33.35],[45.3,33.7],[45.4,33.0],[45.55,32.75]]
+  },
+  {
+    id: 'khuzestan', name: 'Khuzestan', capital: 'Ahvaz', labelLng: 48.8, labelLat: 31.5,
+    ethnicity: 'Arab (Ahvazi)', color: '#50d28c',
+    desc: 'Iran\'s oil heartland — holds ~80% of Iran\'s proven oil reserves and most of its petrochemical industry. Home to ~2–3M Arab Iranians (Ahvazi Arabs), who face systematic marginalization despite living atop Iran\'s wealth. Historical separatist tension. Iraqi-backed insurgencies in the 1980s. Major flooding crises in 2019 sparked mass protests that were violently suppressed.',
+    coords: [[47.05,32.8],[48.15,33.1],[49.1,33.15],[50.1,32.7],[50.55,31.8],[50.2,30.9],[49.4,30.1],[48.3,29.75],[47.4,30.05],[47.0,30.9],[46.8,31.9],[47.05,32.8]]
+  },
+  {
+    id: 'lorestan', name: 'Lorestan', capital: 'Khorramabad', labelLng: 48.8, labelLat: 33.6,
+    ethnicity: 'Luri / Kurdish', color: '#f5a623',
+    desc: 'Luri and Kurdish ethnic majority. Western Zagros mountains. Among Iran\'s highest rates of poverty and unemployment. At least 8 protesters killed in the 2026 crackdown — one of the highest death tolls per capita. Strong tribal identity.',
+    coords: [[47.6,33.4],[48.3,33.95],[49.5,33.7],[50.0,33.8],[49.8,34.6],[48.6,35.0],[48.1,35.0],[47.1,35.35],[46.9,34.5],[47.6,33.4]]
+  },
+  {
+    id: 'sistan-baluchestan', name: 'Sistan & Baluchestan', capital: 'Zahedan', labelLng: 61.0, labelLat: 28.5,
+    ethnicity: 'Baloch (Sunni)', color: '#bd10e0',
+    desc: 'Iran\'s largest province by area. Majority Sunni Baloch — the most persecuted minority in Iran by execution rate. Jaish al-Adl (Army of Justice) conducts cross-border attacks from Pakistan. Major drug trafficking corridor (Afghanistan→Europe). Extreme poverty. Borders Pakistan and Afghanistan — both major instability vectors. IRGC operates anti-smuggling checkpoints heavily in this region.',
+    coords: [[59.6,31.4],[61.0,31.6],[62.3,31.1],[63.2,29.5],[63.5,27.5],[63.5,25.6],[62.2,25.05],[60.5,25.0],[58.9,25.5],[57.8,26.8],[57.5,27.8],[58.1,29.2],[58.7,30.6],[59.6,31.4]]
+  },
+  {
+    id: 'khorasan-razavi', name: 'Khorasan Razavi', capital: 'Mashhad', labelLng: 59.2, labelLat: 35.8,
+    ethnicity: 'Persian / Mixed', color: '#ff6464',
+    desc: 'Most populous northeastern province. Mashhad is Iran\'s 2nd largest city and home to the Imam Reza shrine — the most visited site in the Muslim world (~30M pilgrims/year), making it a critical soft-power asset. Borders Afghanistan and Turkmenistan. Primary overland route for Afghan heroin trafficking into Iran and Europe. The 12-Day War (2025) and current conflict have caused massive refugee inflows from Afghanistan.',
+    coords: [[57.1,37.4],[58.6,37.9],[60.6,37.6],[61.6,36.8],[61.3,35.1],[59.8,33.9],[58.0,33.6],[56.7,34.1],[56.5,35.4],[57.0,36.5],[57.1,37.4]]
+  },
+  {
+    id: 'hormozgan', name: 'Hormozgan', capital: 'Bandar Abbas', labelLng: 56.5, labelLat: 26.8,
+    ethnicity: 'Persian / Arab / Bandari', color: '#ff6464',
+    desc: 'Strategic southern coastal province. Home to Bandar Abbas — Iran\'s main naval base and commercial port. Controls the Iranian side of the Strait of Hormuz. Qeshm and Larak islands are IRGCN fast-boat and mining bases. Diverse "Bandari" culture (Persian, Arab, African influence). The province is the focal point of all Iranian maritime power projection.',
+    coords: [[54.1,27.9],[55.4,27.7],[56.9,27.1],[58.4,26.6],[59.5,26.0],[59.8,25.6],[57.5,25.2],[55.3,25.2],[53.8,25.9],[53.4,26.6],[53.9,27.5],[54.1,27.9]]
+  },
+];
+
+// ── Geometry helpers ────────────────────────────────────
+// Generates a GeoJSON polygon approximating a geodesic circle
+function geoCircle(centerLng, centerLat, radiusKm, steps = 128) {
+  const R = 6371;
+  const d = radiusKm / R;
+  const lat1 = centerLat * Math.PI / 180;
+  const lng1 = centerLng * Math.PI / 180;
+  const coords = [];
+  for (let i = 0; i <= steps; i++) {
+    const bearing = (i / steps) * 2 * Math.PI;
+    const lat2 = Math.asin(
+      Math.sin(lat1) * Math.cos(d) +
+      Math.cos(lat1) * Math.sin(d) * Math.cos(bearing)
+    );
+    const lng2 = lng1 + Math.atan2(
+      Math.sin(bearing) * Math.sin(d) * Math.cos(lat1),
+      Math.cos(d) - Math.sin(lat1) * Math.sin(lat2)
+    );
+    coords.push([lng2 * 180 / Math.PI, lat2 * 180 / Math.PI]);
+  }
+  return coords;
+}
+
+function bezierCurve(p0, p2, steps = 80) {
+  const mid = [(p0[0]+p2[0])/2, (p0[1]+p2[1])/2];
+  const dx = p2[0]-p0[0], dy = p2[1]-p0[1];
+  const len = Math.sqrt(dx*dx+dy*dy) || 1;
+  const curv = len * 0.22;
+  const p1 = [mid[0]-(dy/len)*curv, mid[1]+(dx/len)*curv];
+  return Array.from({length: steps+1}, (_,i) => {
+    const t = i/steps;
+    return [
+      (1-t)*(1-t)*p0[0] + 2*(1-t)*t*p1[0] + t*t*p2[0],
+      (1-t)*(1-t)*p0[1] + 2*(1-t)*t*p1[1] + t*t*p2[1],
+    ];
+  });
+}
+
+function approxBearing(p1, p2) {
+  return (Math.atan2(p2[0]-p1[0], p2[1]-p1[1]) * 180/Math.PI + 360) % 360;
+}
+
+function strikeWidth(count) {
+  return 1.5 + (count / 2001) * 12.5;
+}
+
+// ── SVG builders for slide 2 ────────────────────────────
+function mkArrowSVG(bearing, color='#ff4040', s=18) {
+  return `<svg width="${s}" height="${s}" viewBox="0 0 18 18" style="transform:rotate(${bearing}deg)" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="9,0 18,18 9,12 0,18" fill="${color}" opacity="0.92"/>
+  </svg>`;
+}
+
+function mkCoalitionSVG(flag, s=26) {
+  const c = flag==='US' ? '#3a7bd5' : flag==='UK' ? '#5588cc' : '#8888ee';
+  return `<svg width="${s}" height="${s}" viewBox="0 0 26 26" xmlns="http://www.w3.org/2000/svg">
+    <rect x="1" y="1" width="24" height="24" rx="2" fill="rgba(0,15,50,0.82)" stroke="${c}" stroke-width="1.6"/>
+    <line x1="13" y1="4" x2="13" y2="22" stroke="${c}" stroke-width="2"/>
+    <line x1="4"  y1="13" x2="22" y2="13" stroke="${c}" stroke-width="2"/>
+    <circle cx="13" cy="13" r="2.2" fill="${c}"/>
+  </svg>`;
+}
+
+// ══════════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════════
+if (MAPBOX_TOKEN === 'YOUR_MAPBOX_TOKEN_HERE') {
+  document.getElementById('token-warn').style.display = 'block';
+}
+
+mapboxgl.accessToken = MAPBOX_TOKEN;
+
+const map = new mapboxgl.Map({
+  container: 'map',
+  style: 'mapbox://styles/mapbox/dark-v11',
+  center: [54.5, 32.2],
+  zoom: 5.2,
+  pitch: 35,
+  bearing: 0,
+  projection: 'mercator',
+  antialias: true,
+});
+
+map.addControl(new mapboxgl.NavigationControl({ visualizePitch: true }), 'top-right');
+map.addControl(new mapboxgl.ScaleControl({ unit: 'metric' }), 'bottom-right');
+
+// UTC clock
+function tick() {
+  const d = new Date();
+  document.getElementById('utctime').textContent =
+    d.toISOString().slice(0,19).replace('T',' ') + ' UTC';
+}
+setInterval(tick, 1000); tick();
+
+// Coordinate tracker
+map.on('mousemove', e => {
+  const lat = e.lngLat.lat.toFixed(4).padStart(9);
+  const lng = e.lngLat.lng.toFixed(4).padStart(10);
+  document.getElementById('coordbar').textContent =
+    `LAT ${lat} °N   |   LON ${lng} °E`;
+});
+
+// Modal
+function closeInfo() {
+  document.getElementById('modal-backdrop').classList.remove('open');
+  if (currentSlide === 1) {
+    map.flyTo({ center: [54.5, 32.2], zoom: 5.2, pitch: 35, bearing: 0, duration: 1200, essential: true });
+  } else if (currentSlide === 2) {
+    map.flyTo({ center: [46.0, 28.5], zoom: 4.1, pitch: 18, bearing: 0, duration: 1200, essential: true });
+  } else if (currentSlide === 4) {
+    map.flyTo({ center: [46.0, 32.0], zoom: 3.2, pitch: 0, bearing: 0, duration: 1200, essential: true });
+  } else {
+    map.flyTo({ center: [54.5, 32.5], zoom: 5.0, pitch: 20, bearing: 0, duration: 1200, essential: true });
+  }
+}
+function openInfo(loc) {
+  const c = COLORS[loc.type];
+  document.getElementById('modal-accent').style.background = c;
+  document.getElementById('info-icon').innerHTML = ICON_FNS[loc.type](c, 36);
+  document.getElementById('info-icon').style.setProperty('--accent', c);
+  document.getElementById('info-cat').textContent = LABELS[loc.type];
+  document.getElementById('info-cat').style.color = c;
+  document.getElementById('info-name').textContent = loc.name;
+  document.getElementById('info-name').style.color = c;
+  document.getElementById('info-coord').textContent =
+    `${loc.lat.toFixed(4)}° N   ${loc.lng.toFixed(4)}° E`;
+  document.getElementById('info-desc').textContent = loc.desc;
+  document.getElementById('modal-backdrop').classList.add('open');
+}
+map.on('click', closeInfo);
+
+// Legend icons
+Object.entries(ICON_FNS).forEach(([type, fn]) => {
+  const el = document.getElementById('leg-' + type);
+  if (el) el.innerHTML = fn(COLORS[type], 22);
+});
+
+// Installation counts
+const counts = {};
+LOCATIONS.forEach(l => { counts[l.type] = (counts[l.type]||0) + 1; });
+Object.entries(counts).forEach(([t, n]) => {
+  const el = document.getElementById('cnt-' + t);
+  if (el) el.textContent = String(n).padStart(2,'0');
+});
+
+// ══════════════════════════════════════════════════════════
+//  MAP LOAD
+// ══════════════════════════════════════════════════════════
+map.on('load', () => {
+
+  // Terrain DEM
+  map.addSource('dem', {
+    type: 'raster-dem',
+    url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
+    tileSize: 512,
+    maxzoom: 14,
+  });
+  map.setTerrain({ source: 'dem', exaggeration: 1.5 });
+
+  // Atmosphere / fog
+  map.setFog({
+    color: 'rgb(4, 8, 18)',
+    'high-color': 'rgb(8, 14, 36)',
+    'horizon-blend': 0.015,
+    'space-color': 'rgb(2, 4, 12)',
+    'star-intensity': 0.8,
+  });
+
+  // Iran border highlight
+  map.addSource('country-boundaries', {
+    type: 'vector',
+    url: 'mapbox://mapbox.country-boundaries-v1',
+  });
+
+  map.addLayer({
+    id: 'iran-fill',
+    type: 'fill',
+    source: 'country-boundaries',
+    'source-layer': 'country_boundaries',
+    filter: ['==', ['get', 'iso_3166_1_alpha_3'], 'IRN'],
+    paint: {
+      'fill-color': 'rgba(0, 255, 136, 0.04)',
+    },
+  });
+
+  map.addLayer({
+    id: 'iran-line',
+    type: 'line',
+    source: 'country-boundaries',
+    'source-layer': 'country_boundaries',
+    filter: ['==', ['get', 'iso_3166_1_alpha_3'], 'IRN'],
+    paint: {
+      'line-color': 'rgba(0, 255, 136, 0.55)',
+      'line-width': 1.8,
+      'line-dasharray': [4, 2],
+    },
+  });
+
+  // ── Installation markers ──────────────────────────────
+  LOCATIONS.forEach(loc => {
+    const el = document.createElement('div');
+    el.className = 'mk';
+    el.innerHTML = ICON_FNS[loc.type](COLORS[loc.type]);
+    el.style.filter = `drop-shadow(0 0 6px ${COLORS[loc.type]}99)`;
+    el.title = loc.name;
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      openInfo(loc);
+      map.flyTo({
+        center: [loc.lng, loc.lat],
+        zoom: Math.max(map.getZoom(), 7.5),
+        duration: 900,
+        essential: true,
+      });
+    });
+    installationMarkers.push(
+      new mapboxgl.Marker({ element: el, anchor: 'center' })
+        .setLngLat([loc.lng, loc.lat])
+        .addTo(map)
+    );
+  });
+
+  // ── Border country labels ─────────────────────────────
+  BORDER_LABELS.forEach(lb => {
+    const el = document.createElement('div');
+    el.className = 'country-label';
+    el.textContent = lb.name;
+    new mapboxgl.Marker({ element: el, anchor: 'center' })
+      .setLngLat([lb.lng, lb.lat])
+      .addTo(map);
+  });
+
+  // ── Water body labels ─────────────────────────────────
+  WATER_LABELS.forEach(lb => {
+    const el = document.createElement('div');
+    el.className = 'water-label';
+    el.textContent = lb.name;
+    new mapboxgl.Marker({ element: el, anchor: 'center' })
+      .setLngLat([lb.lng, lb.lat])
+      .addTo(map);
+  });
+
+  // ── Geographic / terrain labels ───────────────────────
+  GEO_LABELS.forEach(lb => {
+    const el = document.createElement('div');
+    el.className = 'geo-label';
+    el.textContent = lb.name;
+    new mapboxgl.Marker({ element: el, anchor: 'center' })
+      .setLngLat([lb.lng, lb.lat])
+      .addTo(map);
+  });
+
+  // ── City labels ───────────────────────────────────────
+  CITIES.forEach(lb => {
+    const wrap = document.createElement('div');
+    wrap.className = 'city-wrap';
+    const dot = document.createElement('div');
+    dot.className = 'city-dot';
+    const label = document.createElement('div');
+    label.className = 'city-label';
+    label.textContent = lb.name;
+    wrap.appendChild(dot);
+    wrap.appendChild(label);
+    new mapboxgl.Marker({ element: wrap, anchor: 'left', offset: [-3, 0] })
+      .setLngLat([lb.lng, lb.lat])
+      .addTo(map);
+  });
+
+  // ══════════════════════════════════════════════════════
+  //  SLIDE 2 LAYERS
+  // ══════════════════════════════════════════════════════
+
+  // NATO country fills
+  NATO_ISO3.forEach((iso, i) => {
+    map.addLayer({
+      id: `nato-fill-${iso}`,
+      type: 'fill',
+      source: 'country-boundaries',
+      'source-layer': 'country_boundaries',
+      filter: ['==', ['get', 'iso_3166_1_alpha_3'], iso],
+      layout: { visibility: 'none' },
+      paint: { 'fill-color': 'rgba(0,82,163,0.28)' },
+    });
+    map.addLayer({
+      id: `nato-line-${iso}`,
+      type: 'line',
+      source: 'country-boundaries',
+      'source-layer': 'country_boundaries',
+      filter: ['==', ['get', 'iso_3166_1_alpha_3'], iso],
+      layout: { visibility: 'none' },
+      paint: { 'line-color': 'rgba(0,100,210,0.75)', 'line-width': 1.5 },
+    });
+  });
+
+  // Build strike GeoJSON
+  const strikeFeatures = STRIKES.map(s => {
+    const coords = bezierCurve(IRAN_ORIGIN, s.to);
+    return {
+      type: 'Feature',
+      properties: { name: s.name, count: s.count, label: s.label, width: strikeWidth(s.count) },
+      geometry: { type: 'LineString', coordinates: coords },
+    };
+  });
+
+  map.addSource('strikes', {
+    type: 'geojson',
+    data: { type: 'FeatureCollection', features: strikeFeatures },
+  });
+
+  // Glow layer (wide, dim)
+  map.addLayer({
+    id: 'strike-glow',
+    type: 'line',
+    source: 'strikes',
+    layout: { 'line-cap': 'round', 'line-join': 'round', visibility: 'none' },
+    paint: {
+      'line-color': '#ff2020',
+      'line-width': ['*', ['get', 'width'], 2.8],
+      'line-opacity': 0.18,
+      'line-blur': 4,
+    },
+  });
+
+  // Core line layer
+  map.addLayer({
+    id: 'strike-lines',
+    type: 'line',
+    source: 'strikes',
+    layout: { 'line-cap': 'round', 'line-join': 'round', visibility: 'none' },
+    paint: {
+      'line-color': '#ff4040',
+      'line-width': ['get', 'width'],
+      'line-opacity': 0.88,
+    },
+  });
+
+  // Arrowhead + label markers at each strike endpoint
+  STRIKES.forEach(s => {
+    const coords = bezierCurve(IRAN_ORIGIN, s.to);
+    const n = coords.length;
+    const bearing = approxBearing(coords[n-2], coords[n-1]);
+
+    // Arrowhead
+    const arrowEl = document.createElement('div');
+    arrowEl.innerHTML = mkArrowSVG(bearing);
+    arrowEl.style.filter = 'drop-shadow(0 0 5px rgba(255,40,40,0.8))';
+    const arrowMk = new mapboxgl.Marker({ element: arrowEl, anchor: 'center' })
+      .setLngLat(s.to)
+      .addTo(map);
+    arrowMk.getElement().style.display = 'none';
+    coalitionMarkers.push(arrowMk);
+
+    // Strike count label (offset slightly)
+    const lblEl = document.createElement('div');
+    lblEl.className = 'strike-label';
+    lblEl.textContent = `${s.name.toUpperCase()}  ${s.label}`;
+    const lblMk = new mapboxgl.Marker({ element: lblEl, anchor: 'left', offset: [12, 0] })
+      .setLngLat(s.to)
+      .addTo(map);
+    lblMk.getElement().style.display = 'none';
+    coalitionMarkers.push(lblMk);
+  });
+
+  // Coalition base markers
+  COALITION_BASES.forEach(base => {
+    const el = document.createElement('div');
+    el.className = 'co-mk';
+    el.innerHTML = mkCoalitionSVG(base.flag);
+    const flagColors = { US:'#3a7bd5', UK:'#5588cc', IL:'#8888ee' };
+    el.style.filter = `drop-shadow(0 0 5px ${flagColors[base.flag] || '#4080ff'}99)`;
+    el.title = base.name;
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      const fakeLoc = { type: base.flag, name: base.name, lat: base.lat, lng: base.lng, desc: base.desc };
+      const typeMap = { US:'US MILITARY BASE', UK:'UK / ALLIED BASE', IL:'ISRAELI AIR BASE' };
+      const colorMap = { US:'#3a7bd5', UK:'#5588cc', IL:'#8888ee' };
+      const c = colorMap[base.flag] || '#4080ff';
+      document.getElementById('modal-accent').style.background = c;
+      document.getElementById('info-icon').innerHTML = mkCoalitionSVG(base.flag, 36);
+      document.getElementById('info-cat').textContent = typeMap[base.flag] || 'ALLIED BASE';
+      document.getElementById('info-cat').style.color = c;
+      document.getElementById('info-name').textContent = base.name;
+      document.getElementById('info-name').style.color = c;
+      document.getElementById('info-coord').textContent = `${base.lat.toFixed(4)}° N   ${base.lng.toFixed(4)}° E`;
+      document.getElementById('info-desc').textContent = base.desc;
+      document.getElementById('modal-backdrop').classList.add('open');
+      map.flyTo({ center: [base.lng, base.lat], zoom: Math.max(map.getZoom(), 7.5), duration: 900 });
+    });
+    const mk = new mapboxgl.Marker({ element: el, anchor: 'center' })
+      .setLngLat([base.lng, base.lat])
+      .addTo(map);
+    mk.getElement().style.display = 'none';
+    coalitionMarkers.push(mk);
+  });
+
+  // Populate legend2 icons
+  ['US','UK','IL'].forEach(flag => {
+    const el = document.getElementById('leg2-' + flag.toLowerCase());
+    if (el) el.innerHTML = mkCoalitionSVG(flag, 22);
+  });
+
+  // ══════════════════════════════════════════════════════
+  //  SLIDE 3 LAYERS — INTERNAL REGIONS
+  // ══════════════════════════════════════════════════════
+  const provincialMarkers = [];
+
+  const provFeatures = PROVINCES.map(p => ({
+    type: 'Feature',
+    properties: { id: p.id, color: p.color },
+    geometry: { type: 'Polygon', coordinates: [p.coords] },
+  }));
+
+  map.addSource('provinces', {
+    type: 'geojson',
+    data: { type: 'FeatureCollection', features: provFeatures },
+  });
+
+  map.addLayer({
+    id: 'province-fill',
+    type: 'fill',
+    source: 'provinces',
+    layout: { visibility: 'none' },
+    paint: {
+      'fill-color': ['get', 'color'],
+      'fill-opacity': 0.28,
+    },
+  });
+
+  map.addLayer({
+    id: 'province-line',
+    type: 'line',
+    source: 'provinces',
+    layout: { visibility: 'none' },
+    paint: {
+      'line-color': ['get', 'color'],
+      'line-width': 1.4,
+      'line-opacity': 0.75,
+      'line-dasharray': [3, 2],
+    },
+  });
+
+  // Province labels + click handlers
+  PROVINCES.forEach(p => {
+    const el = document.createElement('div');
+    el.className = 'prov-label';
+    el.style.color = p.color;
+    el.innerHTML = `<span class="prov-name">${p.name.toUpperCase()}</span><span class="prov-eth">${p.ethnicity}</span>`;
+    el.style.cursor = 'pointer';
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      const c = p.color;
+      document.getElementById('modal-accent').style.background = c;
+      document.getElementById('info-icon').innerHTML = `<svg width="36" height="36" viewBox="0 0 36 36"><rect x="2" y="2" width="32" height="32" rx="3" fill="${c}22" stroke="${c}" stroke-width="1.5"/><circle cx="18" cy="18" r="6" fill="${c}" opacity="0.7"/></svg>`;
+      document.getElementById('info-cat').textContent = `${p.ethnicity.toUpperCase()} — IRAN PROVINCE`;
+      document.getElementById('info-cat').style.color = c;
+      document.getElementById('info-name').textContent = p.name;
+      document.getElementById('info-name').style.color = c;
+      document.getElementById('info-coord').textContent = `Capital: ${p.capital}`;
+      document.getElementById('info-desc').textContent = p.desc;
+      document.getElementById('modal-backdrop').classList.add('open');
+    });
+    const mk = new mapboxgl.Marker({ element: el, anchor: 'center' })
+      .setLngLat([p.labelLng, p.labelLat])
+      .addTo(map);
+    mk.getElement().style.display = 'none';
+    provincialMarkers.push(mk);
+  });
+
+  // Register slide 3 markers for toggling
+  coalitionMarkers._slide3 = provincialMarkers;
+
+  // ══════════════════════════════════════════════════════
+  //  SLIDE 4 LAYERS — RANGE FANS
+  // ══════════════════════════════════════════════════════
+  const slide4Markers = [];
+
+  RANGE_CATEGORIES.forEach(cat => {
+    const circleFeatures = cat.systems.map(sys => ({
+      type: 'Feature',
+      properties: { name: sys.name, range: sys.range, color: cat.color },
+      geometry: {
+        type: 'Polygon',
+        coordinates: [geoCircle(IRAN_CENTER_LNG, IRAN_CENTER_LAT, sys.range)],
+      },
+    }));
+
+    map.addSource(`range-${cat.id}`, {
+      type: 'geojson',
+      data: { type: 'FeatureCollection', features: circleFeatures },
+    });
+
+    // Glow fill
+    map.addLayer({
+      id: `range-fill-${cat.id}`,
+      type: 'fill',
+      source: `range-${cat.id}`,
+      layout: { visibility: 'none' },
+      paint: {
+        'fill-color': cat.color,
+        'fill-opacity': 0.04,
+      },
+    });
+
+    // Dashed ring
+    map.addLayer({
+      id: `range-line-${cat.id}`,
+      type: 'line',
+      source: `range-${cat.id}`,
+      layout: { visibility: 'none', 'line-join': 'round' },
+      paint: {
+        'line-color': cat.color,
+        'line-width': 1.2,
+        'line-opacity': 0.75,
+        'line-dasharray': [5, 4],
+      },
+    });
+
+    // Label markers at the edge of each circle (default east, overrideable per system)
+    cat.systems.forEach(sys => {
+      const R = 6371;
+      const d = sys.range / R;
+      const lat1 = IRAN_CENTER_LAT * Math.PI / 180;
+      const lng1 = IRAN_CENTER_LNG * Math.PI / 180;
+      const bearing = ((sys.labelBearing !== undefined ? sys.labelBearing : 90) * Math.PI) / 180;
+      const lat2 = Math.asin(
+        Math.sin(lat1) * Math.cos(d) +
+        Math.cos(lat1) * Math.sin(d) * Math.cos(bearing)
+      );
+      const lng2 = lng1 + Math.atan2(
+        Math.sin(bearing) * Math.sin(d) * Math.cos(lat1),
+        Math.cos(d) - Math.sin(lat1) * Math.sin(lat2)
+      );
+      const labelLng = lng2 * 180 / Math.PI;
+      const labelLat = lat2 * 180 / Math.PI;
+
+      const rangeStr = sys.range >= 1000
+        ? (sys.range / 1000).toFixed(sys.range % 1000 === 0 ? 0 : 1) + 'K'
+        : sys.range;
+      const mirvTag = sys.mirv ? '  [MIRV]' : '';
+
+      const el = document.createElement('div');
+      el.className = 'range-label';
+      el.style.color = sys.mirv ? '#ff8888' : cat.color;
+      el.style.borderLeft = `2px solid ${sys.mirv ? '#ff8888' : cat.color}`;
+      el.style.textShadow = `0 0 8px ${sys.mirv ? '#ff888888' : cat.color + '88'}`;
+      if (sys.mirv) el.style.fontWeight = 'bold';
+      el.textContent = `${sys.name.toUpperCase()}  ${rangeStr} KM${mirvTag}`;
+
+      const mk = new mapboxgl.Marker({ element: el, anchor: 'left', offset: [6, 0] })
+        .setLngLat([labelLng, labelLat])
+        .addTo(map);
+      mk.getElement().style.display = 'none';
+      slide4Markers.push(mk);
+    });
+  });
+
+  // MIRV overlay — solid bright ring on top of the dashed ballistic circle
+  const mirvSystems = RANGE_CATEGORIES.flatMap(cat =>
+    cat.systems.filter(s => s.mirv).map(s => ({
+      type: 'Feature',
+      properties: {},
+      geometry: { type: 'Polygon', coordinates: [geoCircle(IRAN_CENTER_LNG, IRAN_CENTER_LAT, s.range)] },
+    }))
+  );
+  map.addSource('range-mirv', {
+    type: 'geojson',
+    data: { type: 'FeatureCollection', features: mirvSystems },
+  });
+  map.addLayer({
+    id: 'range-mirv-glow',
+    type: 'line',
+    source: 'range-mirv',
+    layout: { visibility: 'none', 'line-join': 'round' },
+    paint: { 'line-color': '#ff6666', 'line-width': 6, 'line-opacity': 0.15, 'line-blur': 6 },
+  });
+  map.addLayer({
+    id: 'range-mirv-line',
+    type: 'line',
+    source: 'range-mirv',
+    layout: { visibility: 'none', 'line-join': 'round' },
+    paint: { 'line-color': '#ff8888', 'line-width': 1.8, 'line-opacity': 0.9 },
+  });
+
+  // Center marker for Iran
+  const centerEl = document.createElement('div');
+  centerEl.innerHTML = `<svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="9" cy="9" r="7" fill="none" stroke="rgba(0,255,136,0.7)" stroke-width="1.2"/>
+    <line x1="9" y1="0" x2="9" y2="18" stroke="rgba(0,255,136,0.4)" stroke-width="0.8"/>
+    <line x1="0" y1="9" x2="18" y2="9" stroke="rgba(0,255,136,0.4)" stroke-width="0.8"/>
+    <circle cx="9" cy="9" r="2.5" fill="rgba(0,255,136,0.9)"/>
+  </svg>`;
+  centerEl.style.filter = 'drop-shadow(0 0 6px rgba(0,255,136,0.6))';
+  const centerMk = new mapboxgl.Marker({ element: centerEl, anchor: 'center' })
+    .setLngLat([IRAN_CENTER_LNG, IRAN_CENTER_LAT])
+    .addTo(map);
+  centerMk.getElement().style.display = 'none';
+  slide4Markers.push(centerMk);
+
+  coalitionMarkers._slide4 = slide4Markers;
+
+  // Animate strike glow pulse
+  let pulseDir = 1, pulseVal = 0.18;
+  (function pulseStrikes() {
+    pulseVal += 0.004 * pulseDir;
+    if (pulseVal >= 0.32) pulseDir = -1;
+    if (pulseVal <= 0.08) pulseDir = 1;
+    if (currentSlide === 2 && map.getLayer('strike-glow')) {
+      map.setPaintProperty('strike-glow', 'line-opacity', pulseVal);
+    }
+    requestAnimationFrame(pulseStrikes);
+  })();
+
+});
+
+// ══════════════════════════════════════════════════════════
+//  SLIDE NAVIGATION
+// ══════════════════════════════════════════════════════════
+const SLIDE_LAYERS_2 = ['strike-glow', 'strike-lines',
+  ...['TUR','GRC'].flatMap(iso => [`nato-fill-${iso}`, `nato-line-${iso}`])];
+const SLIDE_LAYERS_3 = ['province-fill', 'province-line'];
+const SLIDE_LAYERS_4 = [
+  ...RANGE_CATEGORIES.flatMap(cat => [`range-fill-${cat.id}`, `range-line-${cat.id}`]),
+  'range-mirv-glow', 'range-mirv-line',
+];
+
+function setLayerVisibility(ids, vis) {
+  ids.forEach(id => {
+    if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', vis);
+  });
+}
+
+function getSlide3Markers() {
+  return coalitionMarkers._slide3 || [];
+}
+
+function getSlide4Markers() {
+  return coalitionMarkers._slide4 || [];
+}
+
+function showSlide(n) {
+  currentSlide = n;
+  document.querySelectorAll('.slide-btn').forEach((btn, i) => btn.classList.toggle('active', i+1 === n));
+
+  // Hide everything first
+  installationMarkers.forEach(m => m.getElement().style.display = 'none');
+  coalitionMarkers.forEach(m => m.getElement().style.display = 'none');
+  getSlide3Markers().forEach(m => m.getElement().style.display = 'none');
+  getSlide4Markers().forEach(m => m.getElement().style.display = 'none');
+  setLayerVisibility([...SLIDE_LAYERS_2, ...SLIDE_LAYERS_3, ...SLIDE_LAYERS_4], 'none');
+  ['counts','legend','legend2','legend3','legend4'].forEach(id => document.getElementById(id).style.display = 'none');
+
+  if (n === 1) {
+    installationMarkers.forEach(m => m.getElement().style.display = '');
+    document.getElementById('counts').style.display = 'block';
+    document.getElementById('legend').style.display = 'block';
+    map.flyTo({ center: [54.5, 32.2], zoom: 5.2, pitch: 35, bearing: 0, duration: 1300 });
+
+  } else if (n === 2) {
+    coalitionMarkers.forEach(m => m.getElement().style.display = '');
+    setLayerVisibility(SLIDE_LAYERS_2, 'visible');
+    document.getElementById('legend2').style.display = 'block';
+    map.flyTo({ center: [46.0, 28.5], zoom: 4.1, pitch: 18, bearing: 0, duration: 1300 });
+
+  } else if (n === 3) {
+    getSlide3Markers().forEach(m => m.getElement().style.display = '');
+    setLayerVisibility(SLIDE_LAYERS_3, 'visible');
+    document.getElementById('legend3').style.display = 'block';
+    map.flyTo({ center: [54.5, 32.5], zoom: 5.0, pitch: 20, bearing: 0, duration: 1300 });
+
+  } else if (n === 4) {
+    getSlide4Markers().forEach(m => m.getElement().style.display = '');
+    setLayerVisibility(SLIDE_LAYERS_4, 'visible');
+    document.getElementById('legend4').style.display = 'block';
+    map.flyTo({ center: [46.0, 32.0], zoom: 3.2, pitch: 0, bearing: 0, duration: 1300 });
+  }
+}
+
+// Keyboard nav
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') showSlide(Math.min(currentSlide + 1, 4));
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   showSlide(Math.max(currentSlide - 1, 1));
+});
+</script>
+</body>
+</html>
