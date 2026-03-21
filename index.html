@@ -867,7 +867,7 @@
   <div class="leg8-row"><div class="loe-icon" id="leg8-threat"></div>Active threat (Pickaxe Mtn)</div>
   <div class="leg8-row">
     <div style="width:26px;height:0;border-top:1px dashed rgba(0,212,255,0.7);flex-shrink:0"></div>
-    B-2 flight path (Diego Garcia)
+    B-2 flight path (Whiteman AFB, MO)
   </div>
 </div>
 
@@ -1591,8 +1591,8 @@ const LOE4_TARGETS = [
   },
 ];
 
-// B-2 departs from Whiteman AFB (MO) or Diego Garcia
-const DIEGO_GARCIA = [72.4, -7.3];
+// B-2 Spirit — home base Whiteman AFB, Missouri
+const WHITEMAN_AFB = [-93.55, 38.72];
 const LOE4_B2_ROUTES = [
   { to: [50.9934, 34.8847], label: 'B-2 → FORDOW' },
   { to: [51.727,  33.722 ], label: 'B-2 → NATANZ' },
@@ -2481,7 +2481,7 @@ map.on('load', () => {
   const b2Features = LOE4_B2_ROUTES.map((r, i) => ({
     type: 'Feature',
     properties: { label: r.label },
-    geometry: { type: 'LineString', coordinates: bezierCurve(DIEGO_GARCIA, r.to) },
+    geometry: { type: 'LineString', coordinates: bezierCurve(WHITEMAN_AFB, r.to) },
   }));
 
   map.addSource('b2-routes', {
@@ -2504,8 +2504,8 @@ map.on('load', () => {
   // Diego Garcia marker
   const dgEl = document.createElement('div');
   dgEl.className = 'b2-label';
-  dgEl.textContent = 'DIEGO GARCIA (B-2 DEPARTURE)';
-  addLoeMarker(dgEl, DIEGO_GARCIA[0], DIEGO_GARCIA[1], slide8Markers);
+  dgEl.textContent = 'WHITEMAN AFB, MO (B-2 DEPARTURE)';
+  addLoeMarker(dgEl, WHITEMAN_AFB[0], WHITEMAN_AFB[1], slide8Markers);
 
   // Populate legend8 icons
   document.getElementById('leg8-struck').innerHTML = mkStruckNuclear(22);
