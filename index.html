@@ -275,7 +275,10 @@
       left: 50%; transform: translateX(-50%);
       z-index: 200;
       display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
       gap: 6px;
+      max-width: 92vw;
     }
 
     .slide-btn {
@@ -594,6 +597,124 @@
       align-items: center;
       pointer-events: none;
     }
+
+    /* ── LOE PANEL (top-left, replaces counts on LOE slides) ── */
+    #loe-panel {
+      position: fixed;
+      top: 86px; left: 18px;
+      z-index: 200;
+      background: rgba(5,8,16,0.93);
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 14px 16px;
+      display: none;
+      max-width: 268px;
+    }
+
+    .loe-num {
+      font-family: 'Orbitron', monospace;
+      font-size: 8px;
+      letter-spacing: 5px;
+      margin-bottom: 5px;
+    }
+
+    .loe-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      line-height: 1.4;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+    }
+
+    .loe-stat {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin: 5px 0;
+      font-size: 10px;
+      color: rgba(210,220,210,0.75);
+      line-height: 1.5;
+    }
+
+    .loe-tick { flex-shrink: 0; }
+
+    .loe-divider {
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      margin: 10px 0;
+    }
+
+    /* ── LOE LEGENDS ── */
+    #legend5, #legend6, #legend7 {
+      position: fixed;
+      bottom: 28px; left: 18px;
+      z-index: 200;
+      background: rgba(5,8,16,0.9);
+      padding: 14px 16px;
+      display: none;
+      min-width: 210px;
+    }
+
+    #legend5 { border: 1px solid rgba(0,212,255,0.25); }
+    #legend6 { border: 1px solid rgba(255,60,60,0.28); }
+    #legend7 { border: 1px solid rgba(255,140,0,0.25); }
+
+    .leg5-head {
+      font-family: 'Orbitron', monospace; font-size: 8px;
+      letter-spacing: 4px; color: rgba(0,212,255,0.5);
+      margin-bottom: 11px; padding-bottom: 8px;
+      border-bottom: 1px solid rgba(0,212,255,0.15);
+    }
+    .leg6-head {
+      font-family: 'Orbitron', monospace; font-size: 8px;
+      letter-spacing: 4px; color: rgba(255,60,60,0.5);
+      margin-bottom: 11px; padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255,60,60,0.15);
+    }
+    .leg7-head {
+      font-family: 'Orbitron', monospace; font-size: 8px;
+      letter-spacing: 4px; color: rgba(255,140,0,0.5);
+      margin-bottom: 11px; padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255,140,0,0.15);
+    }
+
+    .leg5-row, .leg6-row, .leg7-row {
+      display: flex; align-items: center;
+      gap: 10px; margin: 7px 0;
+      font-size: 10px; color: rgba(210,210,210,0.7);
+    }
+
+    .loe-icon {
+      width: 26px; height: 26px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* clickable LOE markers */
+    .sunk-mk, .struck-mk, .threat-mk, .sub-mk, .proxy-mk {
+      cursor: pointer;
+      transition: filter 0.2s, transform 0.2s;
+    }
+    .sunk-mk:hover, .struck-mk:hover, .threat-mk:hover,
+    .sub-mk:hover, .proxy-mk:hover {
+      filter: brightness(1.6) !important; transform: scale(1.25);
+    }
+
+    .b2-label, .supply-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 9px; letter-spacing: 1px;
+      pointer-events: none; white-space: nowrap;
+      padding: 1px 5px; background: rgba(5,8,16,0.82);
+    }
+    .b2-label    { color: rgba(0,212,255,0.85); border-left: 2px solid rgba(0,180,255,0.6); }
+    .supply-label{ color: rgba(255,160,40,0.85); border-left: 2px solid rgba(255,120,0,0.6); }
+
+    .proxy-status {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 9px; letter-spacing: 1px;
+      pointer-events: none; white-space: nowrap;
+      padding: 2px 7px; background: rgba(5,8,16,0.87);
+    }
   </style>
 </head>
 <body>
@@ -681,6 +802,44 @@
   <div class="leg3-row"><div class="eth-swatch" style="background:rgba(255,100,100,0.55)"></div>Strategic / Mixed</div>
 </div>
 
+<!-- LOE panel (top-left, replaces counts for slides 5-7) -->
+<div id="loe-panel"></div>
+
+<!-- LOE 1 legend -->
+<div id="legend5">
+  <div class="leg5-head">LOE 1 // KEY</div>
+  <div class="leg5-row"><div class="loe-icon" id="leg5-sunk"></div>Iranian vessel sunk</div>
+  <div class="leg5-row"><div class="loe-icon" id="leg5-struck"></div>Naval base struck</div>
+  <div class="leg5-row"><div class="loe-icon" id="leg5-sub"></div>USS Charlotte (SSN-766)</div>
+</div>
+
+<!-- LOE 2 legend -->
+<div id="legend6">
+  <div class="leg6-head">LOE 2 // KEY</div>
+  <div class="leg6-row"><div class="loe-icon" id="leg6-struck"></div>Nuclear site struck</div>
+  <div class="leg6-row"><div class="loe-icon" id="leg6-threat"></div>Active threat (Pickaxe Mtn)</div>
+  <div class="leg6-row">
+    <div style="width:26px;height:0;border-top:1px dashed rgba(0,212,255,0.7);flex-shrink:0"></div>
+    B-2 flight path (Diego Garcia)
+  </div>
+</div>
+
+<!-- LOE 3 legend -->
+<div id="legend7">
+  <div class="leg7-head">LOE 3 // KEY</div>
+  <div class="leg7-row"><div class="loe-icon" id="leg7-hizb"></div>Hezbollah (degraded)</div>
+  <div class="leg7-row"><div class="loe-icon" id="leg7-houthi"></div>Houthi / Ansar Allah</div>
+  <div class="leg7-row"><div class="loe-icon" id="leg7-pmf"></div>PMF / Kataib Hezbollah</div>
+  <div class="leg7-row">
+    <div style="width:26px;height:0;border-top:2px dashed rgba(255,140,0,0.7);flex-shrink:0"></div>
+    Supply route (active)
+  </div>
+  <div class="leg7-row">
+    <div style="width:26px;height:0;border-top:2px dashed rgba(255,60,60,0.5);flex-shrink:0"></div>
+    Maritime route (interdicted)
+  </div>
+</div>
+
 <!-- Slide 4 legend -->
 <div id="legend4">
   <div class="leg4-head">RANGE FANS // IRAN ARSENAL</div>
@@ -726,6 +885,9 @@
   <button class="slide-btn"        onclick="showSlide(2)">02 // REGIONAL STRIKES</button>
   <button class="slide-btn"        onclick="showSlide(3)">03 // INTERNAL REGIONS</button>
   <button class="slide-btn"        onclick="showSlide(4)">04 // RANGE FANS</button>
+  <button class="slide-btn"        onclick="showSlide(5)">LOE 1 // NAVY</button>
+  <button class="slide-btn"        onclick="showSlide(6)">LOE 2 // HAMMER</button>
+  <button class="slide-btn"        onclick="showSlide(7)">LOE 3 // PROXIES</button>
 </div>
 
 <!-- Coordinate tracker -->
@@ -1022,6 +1184,68 @@ function mkStrategic(c, s=26) {
   </svg>`;
 }
 
+// LOE-specific icons
+function mkSunk(s=28) {
+  return `<svg width="${s}" height="${s}" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="14" cy="14" r="12" fill="rgba(255,30,30,0.12)" stroke="#ff3030" stroke-width="1.3"/>
+    <line x1="7" y1="7" x2="21" y2="21" stroke="#ff3030" stroke-width="2.8" stroke-linecap="round"/>
+    <line x1="21" y1="7" x2="7" y2="21" stroke="#ff3030" stroke-width="2.8" stroke-linecap="round"/>
+  </svg>`;
+}
+
+function mkStruckNaval(s=26) {
+  return `<svg width="${s}" height="${s}" viewBox="0 0 26 26" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="13" cy="13" r="11" fill="rgba(255,100,0,0.1)" stroke="#ff6600" stroke-width="1.3" stroke-dasharray="4,2"/>
+    <line x1="13" y1="4" x2="13" y2="22" stroke="#ff6600" stroke-width="0.8" opacity="0.5"/>
+    <line x1="4" y1="13" x2="22" y2="13" stroke="#ff6600" stroke-width="0.8" opacity="0.5"/>
+    <circle cx="13" cy="13" r="3.5" fill="#ff6600" opacity="0.85"/>
+  </svg>`;
+}
+
+function mkSub(s=28) {
+  return `<svg width="${s}" height="${s}" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="14" cy="17" rx="11" ry="5.5" fill="rgba(0,180,255,0.18)" stroke="#00d4ff" stroke-width="1.4"/>
+    <rect x="11" y="7" width="6" height="11" rx="1.5" fill="rgba(0,180,255,0.18)" stroke="#00d4ff" stroke-width="1.3"/>
+    <line x1="14" y1="4" x2="14" y2="7" stroke="#00d4ff" stroke-width="1.5"/>
+    <circle cx="14" cy="14" r="1.8" fill="#00d4ff"/>
+  </svg>`;
+}
+
+function mkStruckNuclear(s=30) {
+  return `<svg width="${s}" height="${s}" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="15" cy="15" r="13" fill="rgba(255,40,40,0.12)" stroke="#ff3a3a" stroke-width="1.5"/>
+    <line x1="15" y1="3" x2="15" y2="27" stroke="#ff3a3a" stroke-width="0.7" opacity="0.4"/>
+    <line x1="3" y1="15" x2="27" y2="15" stroke="#ff3a3a" stroke-width="0.7" opacity="0.4"/>
+    <circle cx="15" cy="15" r="4" fill="#ff3a3a" opacity="0.9"/>
+    <line x1="8" y1="8" x2="22" y2="22" stroke="#ff3a3a" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+    <line x1="22" y1="8" x2="8" y2="22" stroke="#ff3a3a" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+  </svg>`;
+}
+
+function mkThreat(s=30) {
+  return `<svg width="${s}" height="${s}" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="15,2 28,26 2,26" fill="rgba(255,100,0,0.15)" stroke="#ff6600" stroke-width="1.6" stroke-linejoin="round"/>
+    <line x1="15" y1="9" x2="15" y2="18" stroke="#ff6600" stroke-width="2.2" stroke-linecap="round"/>
+    <circle cx="15" cy="22" r="2" fill="#ff6600"/>
+  </svg>`;
+}
+
+function mkProxy(color, initials, s=30) {
+  return `<svg width="${s}" height="${s}" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="15,1 28,8 28,22 15,29 2,22 2,8" fill="rgba(0,0,0,0.45)" stroke="${color}" stroke-width="1.6" stroke-linejoin="round"/>
+    <text x="15" y="19" text-anchor="middle" fill="${color}" font-size="8.5" font-family="monospace" font-weight="bold" letter-spacing="0.5">${initials}</text>
+  </svg>`;
+}
+
+function mkInterdiction(s=22) {
+  return `<svg width="${s}" height="${s}" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="11" cy="11" r="9" fill="rgba(0,212,255,0.12)" stroke="#00d4ff" stroke-width="1.3"/>
+    <line x1="5" y1="11" x2="17" y2="11" stroke="#00d4ff" stroke-width="2" stroke-linecap="round"/>
+    <line x1="14" y1="7" x2="17" y2="11" stroke="#00d4ff" stroke-width="2" stroke-linecap="round"/>
+    <line x1="14" y1="15" x2="17" y2="11" stroke="#00d4ff" stroke-width="2" stroke-linecap="round"/>
+  </svg>`;
+}
+
 const ICON_FNS = {
   airbase:   mkAirbase,
   naval:     mkNaval,
@@ -1180,6 +1404,176 @@ const PROVINCES = [
   },
 ];
 
+// ══════════════════════════════════════════════════════════
+//  LOE 1 DATA — DESTROY IRAN'S NAVY
+// ══════════════════════════════════════════════════════════
+// Operation Epic Fury — Feb 28, 2026
+const LOE1_SHIPS = [
+  {
+    type: 'sunk', name: 'IRIS Dena (sunk)', lat: 6.12, lng: 80.38,
+    desc: 'Moudge-class frigate. Torpedoed by USS Charlotte (SSN-766) on 4 Mar 2026, ~19nm off Galle, Sri Lanka. Two Mk-48 ADCAP torpedoes fired; one hit. ~130 crew; 32 survivors, 87 bodies recovered. First US submarine kill since WWII.'
+  },
+  {
+    type: 'struck', name: 'IRIN HQ — Bandar Abbas', lat: 27.1865, lng: 56.2808,
+    desc: 'Main fleet HQ struck in Operation Epic Fury. Pier infrastructure, logistics vessels, and fast attack craft destroyed in port. Sahand and Sabalan frigates struck.'
+  },
+  {
+    type: 'struck', name: 'Larak Island IRGCN', lat: 26.85, lng: 56.37,
+    desc: 'IRGCN fast-boat base. Multiple swarm vessels and 16 minelaying craft destroyed in opening 48-hour strikes. Key Hormuz chokepoint capacity eliminated.'
+  },
+  {
+    type: 'struck', name: 'Jask Naval Base', lat: 25.6447, lng: 57.768,
+    desc: 'Newly expanded strategic base east of Hormuz. Submarine pens and logistics infrastructure destroyed. Forward projection capability neutralized.'
+  },
+  {
+    type: 'sunk', name: 'Shahid Bagheri (drone carrier)', lat: 25.9, lng: 57.4,
+    desc: 'Iranian drone-carrier converted vessel. Struck by Tomahawk missiles. Eliminated Iran\'s primary maritime UAS launch capability.'
+  },
+  {
+    type: 'struck', name: 'Bandar Anzali — Caspian Fleet', lat: 37.4685, lng: 49.462,
+    desc: 'Caspian fleet base. Corvettes and patrol vessels destroyed at port. Iran\'s Caspian presence eliminated.'
+  },
+  {
+    type: 'struck', name: 'Bandar Abbas — IRGCN Submarine', lat: 27.05, lng: 56.12,
+    desc: 'IRGC Navy submarine base. 1 submarine destroyed in port. Iran\'s subsurface capability neutralized per CENTCOM.'
+  },
+];
+
+const USS_CHARLOTTE = {
+  lat: 6.5, lng: 79.8,
+  name: 'USS Charlotte (SSN-766)',
+  desc: 'Los Angeles-class nuclear attack submarine. Fired 2× Mk-48 ADCAP torpedoes at IRIS Dena on 4 March 2026. First combat sinking by US submarine since WWII. First torpedo kill of any kind since ARA Belgrano (1982 Falklands).',
+};
+
+// ══════════════════════════════════════════════════════════
+//  LOE 2 DATA — MIDNIGHT HAMMER / MISSILE CAPABILITIES
+// ══════════════════════════════════════════════════════════
+// Operation Midnight Hammer — 22 Jun 2025 (part of 12-Day War, Jun 13–24 2025)
+const LOE2_TARGETS = [
+  {
+    type: 'struck', name: 'Fordow FFEP (struck)', lat: 34.8847, lng: 50.9934,
+    mops: 4,
+    desc: 'Buried ~80m underground near Qom. Hit by 4× GBU-57A/B MOPs from B-2 stealth bombers — first operational use of the MOP. Substantially damaged. IAEA denied access post-strike. Reportedly still enriching at degraded capacity.'
+  },
+  {
+    type: 'struck', name: 'Natanz FEUP (struck)', lat: 33.722, lng: 51.727,
+    mops: 6,
+    desc: 'Primary enrichment facility. Hit by 6× MOPs + Tomahawk cruise missiles from submarine. Cascade halls collapsed. Above-ground structures destroyed. Underground halls partially intact per subsequent imagery.'
+  },
+  {
+    type: 'struck', name: 'Isfahan UCF (struck)', lat: 32.528, lng: 51.721,
+    mops: 4,
+    desc: 'Uranium Conversion Facility. Hit during 12-Day War. IAEA subsequently revealed a 4th undeclared enrichment facility in an underground tunnel complex here. Status unknown — inspectors could not visit. 440.9 kg of 60%-enriched uranium stored underground at this site.'
+  },
+  {
+    type: 'threat', name: 'Pickaxe Mountain ⚠', lat: 33.68, lng: 51.59,
+    mops: 0,
+    desc: 'Deep-underground suspected nuclear site ~1 mile south of Natanz. Buried ~100m in granite — deeper than Fordow. Construction began 2021. Iran claims centrifuge assembly; analysts suspect enrichment capability. NOT STRUCK. IAEA has never visited. Activity INCREASED post-Midnight Hammer strikes (PBS Frontline / Washington Post, 2025).'
+  },
+];
+
+// B-2 departs from Whiteman AFB (MO) or Diego Garcia
+const DIEGO_GARCIA = [72.4, -7.3];
+const LOE2_B2_ROUTES = [
+  { to: [50.9934, 34.8847], label: 'B-2 → FORDOW' },
+  { to: [51.727,  33.722 ], label: 'B-2 → NATANZ' },
+  { to: [51.721,  32.528 ], label: 'B-2 → ISFAHAN' },
+];
+
+// ══════════════════════════════════════════════════════════
+//  LOE 3 DATA — PROXY INTERDICTION
+// ══════════════════════════════════════════════════════════
+const LOE3_PROXIES = [
+  {
+    group: 'HZB', color: '#ffcc00', name: 'Hezbollah — South Lebanon',
+    lat: 33.55, lng: 35.5, status: 'DEGRADED / REARMING',
+    statusColor: '#ffaa00',
+    desc: 'Military infrastructure withdrawn from southern Lebanon after 2024 ceasefire. Lebanese Army deployed in south. Western intelligence reports Iran resumed overland missile deliveries via Iraq–Syria corridor. Pre-war: ~150K rockets/missiles. Arsenal significantly depleted; replenishment ongoing.'
+  },
+  {
+    group: 'HTH', color: '#cc44ff', name: 'Houthi / Ansar Allah — Sanaa',
+    lat: 15.35, lng: 44.2, status: 'HOLDING FIRE',
+    statusColor: '#aa44ff',
+    desc: 'Unexpectedly sitting out 2026 Iran war. Weapons stockpile running low after sustained US/Israeli strikes 2024–2025. Aug 28 2025: Israeli airstrikes in Sanaa killed 13 senior officials including PM and military chief of staff. CENTCOM Jul 2025: seized 750+ tons of Iranian-origin materiel bound for Houthis. Drone supply bottlenecked by guidance electronics.'
+  },
+  {
+    group: 'PMF', color: '#ff6666', name: 'PMF / Kataib Hezbollah — Iraq',
+    lat: 33.3, lng: 44.4, status: 'ACTIVE',
+    statusColor: '#ff4444',
+    desc: 'Iraqi Popular Mobilization Forces, Iran-backed Shia militias. Primary overland conduit for Iranian weapons to Hezbollah. Drone strikes on US bases in Iraq. Supply chain partially disrupted by coalition strikes on logistics nodes. Kataib Hezbollah designated terrorist organization.'
+  },
+];
+
+const LOE3_ROUTES = [
+  // Overland: Iran → Iraq → Syria → Lebanon
+  {
+    id: 'overland',
+    coords: [[53.5,32.8],[48.0,33.5],[43.5,33.8],[38.5,34.2],[36.5,33.8],[35.9,33.9]],
+    color: '#ffaa22', dash: [6,4], label: 'OVERLAND: Iran → Iraq → Syria → Lebanon',
+    labelLng: 43.0, labelLat: 35.2, status: 'active',
+  },
+  // Maritime: Iran → Gulf of Aden → Yemen (disrupted)
+  {
+    id: 'maritime',
+    coords: [[57.0,25.0],[54.0,18.0],[50.0,14.0],[44.8,14.8]],
+    color: '#ff4444', dash: [4,5], label: 'MARITIME: Iran → Yemen (interdicted)',
+    labelLng: 52.0, labelLat: 20.0, status: 'interdicted',
+  },
+];
+
+const LOE3_INTERDICTIONS = [
+  { lat: 14.5, lng: 54.5, label: 'Jul 2025 — 750+ tons seized' },
+  { lat: 12.5, lng: 44.8, label: 'Red Sea interdiction ops' },
+];
+
+// LOE panel HTML per slide
+const LOE_PANELS = {
+  5: {
+    accent: '#00d4ff',
+    html: `
+      <div class="loe-num" style="color:#00d4ff">LOE 01 // MARITIME DOMAIN</div>
+      <div class="loe-title" style="color:#00d4ff;border-bottom:1px solid rgba(0,212,255,0.18);padding-bottom:10px">DESTROY IRAN'S NAVY</div>
+      <div class="loe-stat"><span class="loe-tick" style="color:#00d4ff">▸</span><span>OP EPIC FURY — 28 FEB 2026</span></div>
+      <div class="loe-stat"><span class="loe-tick" style="color:#ff3030">▸</span><span><b style="color:#00d4ff">60+</b> VESSELS DESTROYED / DISABLED</span></div>
+      <div class="loe-stat"><span class="loe-tick" style="color:#ff3030">▸</span><span><b style="color:#00d4ff">17</b> MAJOR WARSHIPS SUNK</span></div>
+      <div class="loe-stat"><span class="loe-tick" style="color:#ff3030">▸</span><span><b style="color:#00d4ff">1</b> SUBMARINE DESTROYED</span></div>
+      <hr class="loe-divider">
+      <div class="loe-stat"><span class="loe-tick" style="color:#ffcc00">★</span><span>IRIS DENA — FIRST TORPEDO KILL SINCE WWII</span></div>
+      <div class="loe-stat"><span class="loe-tick" style="color:#00d4ff">▸</span><span>USS CHARLOTTE (SSN-766) / 2× MK-48 ADCAP</span></div>
+      <div class="loe-stat"><span class="loe-tick" style="color:#00d4ff">▸</span><span>19 NM OFF GALLE, SRI LANKA — 04 MAR 2026</span></div>
+    `,
+  },
+  6: {
+    accent: '#ff3a3a',
+    html: `
+      <div class="loe-num" style="color:#ff3a3a">LOE 02 // AIR / STRATEGIC</div>
+      <div class="loe-title" style="color:#ff3a3a;border-bottom:1px solid rgba(255,60,60,0.18);padding-bottom:10px">DESTROY MISSILE CAPABILITIES</div>
+      <div class="loe-stat"><span class="loe-tick" style="color:#ff3a3a">▸</span><span>OP MIDNIGHT HAMMER — 22 JUN 2025</span></div>
+      <div class="loe-stat"><span class="loe-tick" style="color:#ff3a3a">▸</span><span><b style="color:#00d4ff">7×</b> B-2 SPIRITS / <b style="color:#00d4ff">125+</b> AIRCRAFT</span></div>
+      <div class="loe-stat"><span class="loe-tick" style="color:#ff3a3a">▸</span><span><b style="color:#00d4ff">14×</b> GBU-57A/B MOP (FIRST OP. USE)</span></div>
+      <div class="loe-stat"><span class="loe-tick" style="color:#ff3a3a">▸</span><span>FORDOW · NATANZ · ISFAHAN STRUCK</span></div>
+      <hr class="loe-divider">
+      <div class="loe-stat"><span class="loe-tick" style="color:#ffcc00">★</span><span>440.9 KG @ 60% EU — ≈9 WEAPONS</span></div>
+      <div class="loe-stat"><span class="loe-tick" style="color:#ff6600">⚠</span><span style="color:#ff8844">PICKAXE MTN: ACTIVE — NEVER INSPECTED</span></div>
+      <div class="loe-stat"><span class="loe-tick" style="color:#ff6600">⚠</span><span style="color:#ff8844">IAEA 4TH SITE (ISFAHAN): STATUS UNKNOWN</span></div>
+    `,
+  },
+  7: {
+    accent: '#ff8c00',
+    html: `
+      <div class="loe-num" style="color:#ff8c00">LOE 03 // PROXY INTERDICTION</div>
+      <div class="loe-title" style="color:#ff8c00;border-bottom:1px solid rgba(255,140,0,0.18);padding-bottom:10px">CUT PROXY SUPPORT LINES</div>
+      <div class="loe-stat"><span class="loe-tick" style="color:#ffcc00">▸</span><span><b style="color:#ffcc00">HEZBOLLAH:</b> DEGRADED — ARMING RESUMED</span></div>
+      <div class="loe-stat"><span class="loe-tick" style="color:#cc44ff">▸</span><span><b style="color:#cc44ff">HOUTHIS:</b> HOLDING FIRE (ATTRITED)</span></div>
+      <div class="loe-stat"><span class="loe-tick" style="color:#ff6666">▸</span><span><b style="color:#ff6666">PMF / KH:</b> ACTIVE — IRAQ CONDUIT</span></div>
+      <hr class="loe-divider">
+      <div class="loe-stat"><span class="loe-tick" style="color:#00d4ff">★</span><span>JUL 2025: CENTCOM SEIZES <b style="color:#00d4ff">750+ TONS</b></span></div>
+      <div class="loe-stat"><span class="loe-tick" style="color:#ff8c00">▸</span><span>OVERLAND IRAN→IRAQ→SYR→LEB: ACTIVE</span></div>
+      <div class="loe-stat"><span class="loe-tick" style="color:#ff3030">▸</span><span>AUG 2025: 13 HOUTHI CMDR KILLED (SANAA)</span></div>
+    `,
+  },
+};
+
 // ── Geometry helpers ────────────────────────────────────
 // Generates a GeoJSON polygon approximating a geodesic circle
 function geoCircle(centerLng, centerLat, radiusKm, steps = 128) {
@@ -1291,6 +1685,12 @@ function closeInfo() {
     map.flyTo({ center: [46.0, 28.5], zoom: 4.1, pitch: 18, bearing: 0, duration: 1200, essential: true });
   } else if (currentSlide === 4) {
     map.flyTo({ center: [46.0, 32.0], zoom: 3.2, pitch: 0, bearing: 0, duration: 1200, essential: true });
+  } else if (currentSlide === 5) {
+    map.flyTo({ center: [62.0, 18.0], zoom: 3.6, pitch: 0, bearing: 0, duration: 1200, essential: true });
+  } else if (currentSlide === 6) {
+    map.flyTo({ center: [60.0, 14.0], zoom: 3.2, pitch: 0, bearing: 0, duration: 1200, essential: true });
+  } else if (currentSlide === 7) {
+    map.flyTo({ center: [44.0, 28.0], zoom: 4.0, pitch: 0, bearing: 0, duration: 1200, essential: true });
   } else {
     map.flyTo({ center: [54.5, 32.5], zoom: 5.0, pitch: 20, bearing: 0, duration: 1200, essential: true });
   }
@@ -1780,6 +2180,237 @@ map.on('load', () => {
 
   coalitionMarkers._slide4 = slide4Markers;
 
+  // ══════════════════════════════════════════════════════
+  //  LOE 1 — DESTROY IRAN'S NAVY
+  // ══════════════════════════════════════════════════════
+  const slide5Markers = [];
+
+  function addLoeMarker(el, lng, lat, markers) {
+    const mk = new mapboxgl.Marker({ element: el, anchor: 'center' })
+      .setLngLat([lng, lat]).addTo(map);
+    mk.getElement().style.display = 'none';
+    markers.push(mk);
+    return mk;
+  }
+
+  // Ship markers
+  LOE1_SHIPS.forEach(ship => {
+    const el = document.createElement('div');
+    el.className = ship.type === 'sunk' ? 'sunk-mk' : 'struck-mk';
+    el.innerHTML = ship.type === 'sunk' ? mkSunk() : mkStruckNaval();
+    el.style.filter = `drop-shadow(0 0 5px ${ship.type === 'sunk' ? 'rgba(255,30,30,0.8)' : 'rgba(255,100,0,0.8)'})`;
+    el.title = ship.name;
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      const c = ship.type === 'sunk' ? '#ff3030' : '#ff6600';
+      document.getElementById('modal-accent').style.background = c;
+      document.getElementById('info-icon').innerHTML = ship.type === 'sunk' ? mkSunk(36) : mkStruckNaval(36);
+      document.getElementById('info-cat').textContent = ship.type === 'sunk' ? 'VESSEL SUNK' : 'NAVAL BASE STRUCK';
+      document.getElementById('info-cat').style.color = c;
+      document.getElementById('info-name').textContent = ship.name;
+      document.getElementById('info-name').style.color = c;
+      document.getElementById('info-coord').textContent = `${ship.lat.toFixed(4)}° N   ${ship.lng.toFixed(4)}° E`;
+      document.getElementById('info-desc').textContent = ship.desc;
+      document.getElementById('modal-backdrop').classList.add('open');
+      map.flyTo({ center: [ship.lng, ship.lat], zoom: Math.max(map.getZoom(), 7), duration: 900 });
+    });
+    addLoeMarker(el, ship.lng, ship.lat, slide5Markers);
+  });
+
+  // USS Charlotte marker
+  const charlotteEl = document.createElement('div');
+  charlotteEl.className = 'sub-mk';
+  charlotteEl.innerHTML = mkSub();
+  charlotteEl.style.filter = 'drop-shadow(0 0 6px rgba(0,212,255,0.8))';
+  charlotteEl.title = USS_CHARLOTTE.name;
+  charlotteEl.addEventListener('click', e => {
+    e.stopPropagation();
+    document.getElementById('modal-accent').style.background = '#00d4ff';
+    document.getElementById('info-icon').innerHTML = mkSub(36);
+    document.getElementById('info-cat').textContent = 'US ATTACK SUBMARINE';
+    document.getElementById('info-cat').style.color = '#00d4ff';
+    document.getElementById('info-name').textContent = USS_CHARLOTTE.name;
+    document.getElementById('info-name').style.color = '#00d4ff';
+    document.getElementById('info-coord').textContent = `${USS_CHARLOTTE.lat.toFixed(4)}° N   ${USS_CHARLOTTE.lng.toFixed(4)}° E`;
+    document.getElementById('info-desc').textContent = USS_CHARLOTTE.desc;
+    document.getElementById('modal-backdrop').classList.add('open');
+    map.flyTo({ center: [USS_CHARLOTTE.lng, USS_CHARLOTTE.lat], zoom: Math.max(map.getZoom(), 6), duration: 900 });
+  });
+  addLoeMarker(charlotteEl, USS_CHARLOTTE.lng, USS_CHARLOTTE.lat, slide5Markers);
+
+  // Populate legend5 icons
+  document.getElementById('leg5-sunk').innerHTML = mkSunk(22);
+  document.getElementById('leg5-struck').innerHTML = mkStruckNaval(22);
+  document.getElementById('leg5-sub').innerHTML = mkSub(22);
+
+  coalitionMarkers._slide5 = slide5Markers;
+
+  // ══════════════════════════════════════════════════════
+  //  LOE 2 — MIDNIGHT HAMMER / NUCLEAR SITES
+  // ══════════════════════════════════════════════════════
+  const slide6Markers = [];
+
+  // Strike target markers
+  LOE2_TARGETS.forEach(tgt => {
+    const el = document.createElement('div');
+    el.className = tgt.type === 'threat' ? 'threat-mk' : 'struck-mk';
+    el.innerHTML = tgt.type === 'threat' ? mkThreat() : mkStruckNuclear();
+    const glowColor = tgt.type === 'threat' ? 'rgba(255,100,0,0.8)' : 'rgba(255,40,40,0.8)';
+    el.style.filter = `drop-shadow(0 0 6px ${glowColor})`;
+    el.title = tgt.name;
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      const c = tgt.type === 'threat' ? '#ff6600' : '#ff3a3a';
+      document.getElementById('modal-accent').style.background = c;
+      document.getElementById('info-icon').innerHTML = tgt.type === 'threat' ? mkThreat(36) : mkStruckNuclear(36);
+      document.getElementById('info-cat').textContent = tgt.type === 'threat' ? 'ACTIVE THREAT — NOT STRUCK' : `NUCLEAR SITE STRUCK — ${tgt.mops}× GBU-57 MOP`;
+      document.getElementById('info-cat').style.color = c;
+      document.getElementById('info-name').textContent = tgt.name;
+      document.getElementById('info-name').style.color = c;
+      document.getElementById('info-coord').textContent = `${tgt.lat.toFixed(4)}° N   ${tgt.lng.toFixed(4)}° E`;
+      document.getElementById('info-desc').textContent = tgt.desc;
+      document.getElementById('modal-backdrop').classList.add('open');
+      map.flyTo({ center: [tgt.lng, tgt.lat], zoom: Math.max(map.getZoom(), 8), duration: 900 });
+    });
+    addLoeMarker(el, tgt.lng, tgt.lat, slide6Markers);
+  });
+
+  // B-2 flight paths (bezier curves from Diego Garcia)
+  const b2Features = LOE2_B2_ROUTES.map((r, i) => ({
+    type: 'Feature',
+    properties: { label: r.label },
+    geometry: { type: 'LineString', coordinates: bezierCurve(DIEGO_GARCIA, r.to) },
+  }));
+
+  map.addSource('b2-routes', {
+    type: 'geojson',
+    data: { type: 'FeatureCollection', features: b2Features },
+  });
+  map.addLayer({
+    id: 'b2-glow',
+    type: 'line', source: 'b2-routes',
+    layout: { 'line-cap': 'round', 'line-join': 'round', visibility: 'none' },
+    paint: { 'line-color': '#00d4ff', 'line-width': 5, 'line-opacity': 0.12, 'line-blur': 5 },
+  });
+  map.addLayer({
+    id: 'b2-lines',
+    type: 'line', source: 'b2-routes',
+    layout: { 'line-cap': 'round', 'line-join': 'round', visibility: 'none' },
+    paint: { 'line-color': '#00d4ff', 'line-width': 1.2, 'line-opacity': 0.7, 'line-dasharray': [6, 4] },
+  });
+
+  // Diego Garcia marker + B-2 label
+  const dgEl = document.createElement('div');
+  dgEl.className = 'b2-label';
+  dgEl.textContent = 'DIEGO GARCIA (B-2 DEPARTURE)';
+  addLoeMarker(dgEl, DIEGO_GARCIA[0], DIEGO_GARCIA[1], slide6Markers);
+
+  // Populate legend6 icons
+  document.getElementById('leg6-struck').innerHTML = mkStruckNuclear(22);
+  document.getElementById('leg6-threat').innerHTML = mkThreat(22);
+
+  coalitionMarkers._slide6 = slide6Markers;
+
+  // ══════════════════════════════════════════════════════
+  //  LOE 3 — PROXY INTERDICTION
+  // ══════════════════════════════════════════════════════
+  const slide7Markers = [];
+
+  // Supply route lines
+  const routeFeatures = LOE3_ROUTES.map(r => ({
+    type: 'Feature',
+    properties: { color: r.color, dash: r.dash },
+    geometry: { type: 'LineString', coordinates: r.coords },
+  }));
+
+  map.addSource('supply-routes', {
+    type: 'geojson',
+    data: { type: 'FeatureCollection', features: routeFeatures },
+  });
+  map.addLayer({
+    id: 'supply-glow',
+    type: 'line', source: 'supply-routes',
+    layout: { 'line-cap': 'round', 'line-join': 'round', visibility: 'none' },
+    paint: {
+      'line-color': ['get', 'color'],
+      'line-width': 6, 'line-opacity': 0.12, 'line-blur': 5,
+    },
+  });
+  map.addLayer({
+    id: 'supply-lines',
+    type: 'line', source: 'supply-routes',
+    layout: { 'line-cap': 'round', 'line-join': 'round', visibility: 'none' },
+    paint: {
+      'line-color': ['get', 'color'],
+      'line-width': 1.8, 'line-opacity': 0.78,
+      'line-dasharray': [6, 4],
+    },
+  });
+
+  // Route labels
+  LOE3_ROUTES.forEach(r => {
+    const el = document.createElement('div');
+    el.className = 'supply-label';
+    el.style.color = r.color;
+    el.style.borderLeft = `2px solid ${r.color}`;
+    el.style.textShadow = `0 0 8px ${r.color}66`;
+    el.textContent = r.label;
+    addLoeMarker(el, r.labelLng, r.labelLat, slide7Markers);
+  });
+
+  // Proxy group markers
+  LOE3_PROXIES.forEach(p => {
+    const el = document.createElement('div');
+    el.className = 'proxy-mk';
+    el.innerHTML = mkProxy(p.color, p.group);
+    el.style.filter = `drop-shadow(0 0 6px ${p.color}99)`;
+    el.title = p.name;
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      document.getElementById('modal-accent').style.background = p.color;
+      document.getElementById('info-icon').innerHTML = mkProxy(p.color, p.group, 36);
+      document.getElementById('info-cat').textContent = `PROXY GROUP — ${p.status}`;
+      document.getElementById('info-cat').style.color = p.statusColor;
+      document.getElementById('info-name').textContent = p.name;
+      document.getElementById('info-name').style.color = p.color;
+      document.getElementById('info-coord').textContent = `${p.lat.toFixed(4)}° N   ${p.lng.toFixed(4)}° E`;
+      document.getElementById('info-desc').textContent = p.desc;
+      document.getElementById('modal-backdrop').classList.add('open');
+      map.flyTo({ center: [p.lng, p.lat], zoom: Math.max(map.getZoom(), 7), duration: 900 });
+    });
+    addLoeMarker(el, p.lng, p.lat, slide7Markers);
+
+    // Status label
+    const statusEl = document.createElement('div');
+    statusEl.className = 'proxy-status';
+    statusEl.style.color = p.statusColor;
+    statusEl.style.borderLeft = `2px solid ${p.statusColor}`;
+    statusEl.textContent = `${p.group}: ${p.status}`;
+    const smk = new mapboxgl.Marker({ element: statusEl, anchor: 'left', offset: [18, 0] })
+      .setLngLat([p.lng, p.lat]).addTo(map);
+    smk.getElement().style.display = 'none';
+    slide7Markers.push(smk);
+  });
+
+  // Interdiction markers
+  LOE3_INTERDICTIONS.forEach(pt => {
+    const el = document.createElement('div');
+    el.innerHTML = mkInterdiction();
+    el.style.filter = 'drop-shadow(0 0 5px rgba(0,212,255,0.7))';
+    addLoeMarker(el, pt.lng, pt.lat, slide7Markers);
+    const lblEl = document.createElement('div');
+    lblEl.className = 'b2-label';
+    lblEl.textContent = pt.label;
+    addLoeMarker(lblEl, pt.lng + 0.8, pt.lat, slide7Markers);
+  });
+
+  // Populate legend7 icons
+  document.getElementById('leg7-hizb').innerHTML   = mkProxy('#ffcc00', 'HZB', 22);
+  document.getElementById('leg7-houthi').innerHTML = mkProxy('#cc44ff', 'HTH', 22);
+  document.getElementById('leg7-pmf').innerHTML    = mkProxy('#ff6666', 'PMF', 22);
+
+  coalitionMarkers._slide7 = slide7Markers;
+
   // Animate strike glow pulse
   let pulseDir = 1, pulseVal = 0.18;
   (function pulseStrikes() {
@@ -1804,6 +2435,9 @@ const SLIDE_LAYERS_4 = [
   ...RANGE_CATEGORIES.flatMap(cat => [`range-fill-${cat.id}`, `range-line-${cat.id}`]),
   'range-mirv-glow', 'range-mirv-line',
 ];
+const SLIDE_LAYERS_5 = [];
+const SLIDE_LAYERS_6 = ['b2-glow', 'b2-lines'];
+const SLIDE_LAYERS_7 = ['supply-glow', 'supply-lines'];
 
 function setLayerVisibility(ids, vis) {
   ids.forEach(id => {
@@ -1811,13 +2445,11 @@ function setLayerVisibility(ids, vis) {
   });
 }
 
-function getSlide3Markers() {
-  return coalitionMarkers._slide3 || [];
-}
-
-function getSlide4Markers() {
-  return coalitionMarkers._slide4 || [];
-}
+function getSlide3Markers() { return coalitionMarkers._slide3 || []; }
+function getSlide4Markers() { return coalitionMarkers._slide4 || []; }
+function getSlide5Markers() { return coalitionMarkers._slide5 || []; }
+function getSlide6Markers() { return coalitionMarkers._slide6 || []; }
+function getSlide7Markers() { return coalitionMarkers._slide7 || []; }
 
 function showSlide(n) {
   currentSlide = n;
@@ -1828,8 +2460,15 @@ function showSlide(n) {
   coalitionMarkers.forEach(m => m.getElement().style.display = 'none');
   getSlide3Markers().forEach(m => m.getElement().style.display = 'none');
   getSlide4Markers().forEach(m => m.getElement().style.display = 'none');
-  setLayerVisibility([...SLIDE_LAYERS_2, ...SLIDE_LAYERS_3, ...SLIDE_LAYERS_4], 'none');
-  ['counts','legend','legend2','legend3','legend4'].forEach(id => document.getElementById(id).style.display = 'none');
+  getSlide5Markers().forEach(m => m.getElement().style.display = 'none');
+  getSlide6Markers().forEach(m => m.getElement().style.display = 'none');
+  getSlide7Markers().forEach(m => m.getElement().style.display = 'none');
+  setLayerVisibility([
+    ...SLIDE_LAYERS_2, ...SLIDE_LAYERS_3, ...SLIDE_LAYERS_4,
+    ...SLIDE_LAYERS_6, ...SLIDE_LAYERS_7,
+  ], 'none');
+  ['counts','legend','legend2','legend3','legend4','legend5','legend6','legend7','loe-panel']
+    .forEach(id => document.getElementById(id).style.display = 'none');
 
   if (n === 1) {
     installationMarkers.forEach(m => m.getElement().style.display = '');
@@ -1854,12 +2493,44 @@ function showSlide(n) {
     setLayerVisibility(SLIDE_LAYERS_4, 'visible');
     document.getElementById('legend4').style.display = 'block';
     map.flyTo({ center: [46.0, 32.0], zoom: 3.2, pitch: 0, bearing: 0, duration: 1300 });
+
+  } else if (n === 5) {
+    getSlide5Markers().forEach(m => m.getElement().style.display = '');
+    const p5 = LOE_PANELS[5];
+    const panel = document.getElementById('loe-panel');
+    panel.style.display = 'block';
+    panel.style.borderColor = 'rgba(0,212,255,0.25)';
+    panel.innerHTML = p5.html;
+    document.getElementById('legend5').style.display = 'block';
+    map.flyTo({ center: [62.0, 18.0], zoom: 3.6, pitch: 0, bearing: 0, duration: 1300 });
+
+  } else if (n === 6) {
+    getSlide6Markers().forEach(m => m.getElement().style.display = '');
+    setLayerVisibility(SLIDE_LAYERS_6, 'visible');
+    const p6 = LOE_PANELS[6];
+    const panel = document.getElementById('loe-panel');
+    panel.style.display = 'block';
+    panel.style.borderColor = 'rgba(255,60,60,0.25)';
+    panel.innerHTML = p6.html;
+    document.getElementById('legend6').style.display = 'block';
+    map.flyTo({ center: [60.0, 14.0], zoom: 3.2, pitch: 0, bearing: 0, duration: 1300 });
+
+  } else if (n === 7) {
+    getSlide7Markers().forEach(m => m.getElement().style.display = '');
+    setLayerVisibility(SLIDE_LAYERS_7, 'visible');
+    const p7 = LOE_PANELS[7];
+    const panel = document.getElementById('loe-panel');
+    panel.style.display = 'block';
+    panel.style.borderColor = 'rgba(255,140,0,0.25)';
+    panel.innerHTML = p7.html;
+    document.getElementById('legend7').style.display = 'block';
+    map.flyTo({ center: [44.0, 28.0], zoom: 4.0, pitch: 0, bearing: 0, duration: 1300 });
   }
 }
 
 // Keyboard nav
 document.addEventListener('keydown', e => {
-  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') showSlide(Math.min(currentSlide + 1, 4));
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') showSlide(Math.min(currentSlide + 1, 7));
   if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   showSlide(Math.max(currentSlide - 1, 1));
 });
 </script>
