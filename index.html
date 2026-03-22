@@ -16,6 +16,10 @@
       overflow: hidden;
     }
 
+    .mapboxgl-ctrl-bottom-right {
+      display: none !important;
+    }
+
     #map { position: fixed; inset: 0; }
 
     /* scanlines */
@@ -513,6 +517,31 @@
       color: rgba(0,255,136,0.28);
     }
 
+    #author {
+      position: fixed;
+      bottom: 10px; right: 16px;
+      z-index: 200;
+      text-align: right;
+      line-height: 1.7;
+    }
+    #author .author-name {
+      font-family: 'Orbitron', monospace;
+      font-size: 9px;
+      letter-spacing: 3px;
+      color: rgba(0,255,136,0.35);
+    }
+    #author .author-links {
+      font-size: 9px;
+      letter-spacing: 1px;
+      color: rgba(0,255,136,0.22);
+    }
+    #author a {
+      color: rgba(0,255,136,0.3);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    #author a:hover { color: rgba(0,255,136,0.7); }
+
     /* ── TOKEN WARNING ── */
     #token-warn {
       position: fixed;
@@ -924,6 +953,15 @@
 
 <!-- Coordinate tracker -->
 <div id="coordbar">LAT ———————  |  LON ———————</div>
+
+<div id="author">
+  <div class="author-name">DAVID GAITSGORY</div>
+  <div class="author-links">
+    <a href="mailto:dgaitsgory@gmail.com">dgaitsgory@gmail.com</a>
+    &nbsp;//&nbsp;
+    <a href="https://dgaitsgo.com" target="_blank" rel="noopener noreferrer">dgaitsgo.com</a>
+  </div>
+</div>
 
 <script>
 // ══════════════════════════════════════════════════════════
