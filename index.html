@@ -6,6 +6,7 @@
   <title>IRAN // TACTICAL OVERVIEW</title>
   <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
   <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
+  <script src="strikes_data.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -703,6 +704,7 @@
     #legend6 { border: 1px solid rgba(255,85,0,0.28); }
     #legend7 { border: 1px solid rgba(255,140,0,0.25); }
     #legend8 { border: 1px solid rgba(255,60,60,0.28); }
+    #legend9 { border: 1px solid rgba(255,119,0,0.30); }
 
     .leg5-head {
       font-family: 'Orbitron', monospace; font-size: 8px;
@@ -728,10 +730,21 @@
       margin-bottom: 11px; padding-bottom: 8px;
       border-bottom: 1px solid rgba(255,60,60,0.15);
     }
+    .leg9-head {
+      font-family: 'Orbitron', monospace; font-size: 8px;
+      letter-spacing: 4px; color: rgba(255,119,0,0.55);
+      margin-bottom: 11px; padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255,119,0,0.18);
+    }
+    .leg9-sub {
+      font-family: 'Orbitron', monospace; font-size: 7px;
+      letter-spacing: 3px; color: rgba(255,119,0,0.35);
+      margin: 9px 0 4px;
+    }
 
-    .leg5-row, .leg6-row, .leg7-row, .leg8-row {
+    .leg5-row, .leg6-row, .leg7-row, .leg8-row, .leg9-row {
       display: flex; align-items: center;
-      gap: 10px; margin: 7px 0;
+      gap: 10px; margin: 5px 0;
       font-size: 10px; color: rgba(210,210,210,0.7);
     }
 
@@ -764,6 +777,112 @@
       font-size: 9px; letter-spacing: 1px;
       pointer-events: none; white-space: nowrap;
       padding: 2px 7px; background: rgba(5,8,16,0.87);
+    }
+
+    /* ── NAV DROPDOWN ── */
+    .nav-main-btn {
+      font-family: 'Orbitron', monospace;
+      font-size: 8px; letter-spacing: 3px;
+      padding: 9px 22px;
+      background: rgba(5,8,16,0.92);
+      border: 1px solid rgba(0,255,136,0.25);
+      color: rgba(0,255,136,0.55);
+      cursor: pointer; transition: all 0.2s; white-space: nowrap;
+    }
+    .nav-main-btn:hover { border-color: rgba(0,255,136,0.55); color: rgba(0,255,136,0.85); }
+    .nav-main-btn.active { border-color: rgba(0,255,136,0.65); color: #00ff88; background: rgba(0,255,136,0.07); text-shadow: 0 0 10px rgba(0,255,136,0.3); }
+
+    #nav-dropdown {
+      position: fixed;
+      bottom: 60px; left: 50%; transform: translateX(-50%);
+      z-index: 210;
+      background: rgba(4,6,15,0.98);
+      border: 1px solid rgba(0,255,136,0.2);
+      display: none; flex-direction: column;
+      min-width: 220px;
+      box-shadow: 0 0 40px rgba(0,0,0,0.8);
+    }
+    #nav-dropdown.open { display: flex; }
+    #nav-dropdown .slide-btn {
+      border-left: none; border-right: none; border-top: none;
+      border-bottom: 1px solid rgba(0,255,136,0.07);
+      padding: 10px 18px; text-align: left; border-radius: 0;
+    }
+    #nav-dropdown .slide-btn:last-child { border-bottom: none; }
+
+    /* ── ABOUT MODAL ── */
+    #about-modal {
+      position: fixed; inset: 0; z-index: 400;
+      background: rgba(0,0,0,0.75); backdrop-filter: blur(3px);
+      display: none; align-items: flex-start; justify-content: center;
+      overflow-y: auto; padding: 48px 20px 40px;
+    }
+    #about-modal.open { display: flex; }
+    #about-card {
+      width: 660px; max-width: 94vw;
+      background: rgba(5,8,16,0.99);
+      border: 1px solid rgba(0,255,136,0.28);
+      padding: 32px 36px; position: relative;
+      box-shadow: 0 0 80px rgba(0,0,0,0.9);
+    }
+    .about-close {
+      position: absolute; top: 16px; right: 18px;
+      cursor: pointer; color: rgba(0,255,136,0.3); font-size: 14px; transition: color 0.15s;
+    }
+    .about-close:hover { color: #00ff88; }
+    .about-title {
+      font-family: 'Orbitron', monospace; font-size: 20px; font-weight: 900;
+      letter-spacing: 8px; color: #00ff88;
+      text-shadow: 0 0 30px rgba(0,255,136,0.3); margin-bottom: 6px;
+    }
+    .about-sub {
+      font-size: 9px; letter-spacing: 4px; color: rgba(0,255,136,0.32);
+      margin-bottom: 22px; padding-bottom: 18px; border-bottom: 1px solid rgba(0,255,136,0.1);
+    }
+    .about-section {
+      font-family: 'Orbitron', monospace; font-size: 7px; letter-spacing: 5px;
+      color: rgba(0,255,136,0.38); margin: 22px 0 10px;
+      padding-bottom: 6px; border-bottom: 1px solid rgba(0,255,136,0.08);
+    }
+    .about-body { font-size: 12px; color: rgba(0,255,136,0.65); line-height: 1.9; }
+    .about-slide-row { display: flex; gap: 16px; margin: 7px 0; align-items: flex-start; }
+    .about-slide-num {
+      font-family: 'Orbitron', monospace; font-size: 8px; letter-spacing: 2px;
+      color: rgba(0,255,136,0.38); min-width: 78px; padding-top: 2px; flex-shrink: 0;
+    }
+    .about-slide-desc { font-size: 11px; color: rgba(0,255,136,0.62); line-height: 1.65; }
+    .about-note {
+      font-size: 10px; color: rgba(0,255,136,0.28); line-height: 1.75;
+      margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(0,255,136,0.08);
+    }
+    .about-source {
+      font-size: 10px; color: rgba(0,255,136,0.45); line-height: 1.9;
+      margin: 4px 0;
+    }
+    .about-source span { color: rgba(0,255,136,0.25); margin-right: 8px; }
+
+    /* ── SLIDE DESCRIPTION PANEL ── */
+    #slide-desc {
+      position: fixed; bottom: 72px; right: 18px;
+      z-index: 200; max-width: 272px;
+      background: rgba(5,8,16,0.9);
+      border: 1px solid rgba(0,255,136,0.16);
+      padding: 12px 14px; display: none;
+    }
+    .sd-num {
+      font-family: 'Orbitron', monospace; font-size: 7px; letter-spacing: 5px;
+      color: rgba(0,255,136,0.28); margin-bottom: 5px;
+    }
+    .sd-title {
+      font-family: 'Orbitron', monospace; font-size: 10px; font-weight: 700;
+      letter-spacing: 2px; color: rgba(0,255,136,0.72); line-height: 1.35;
+      margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid rgba(0,255,136,0.1);
+    }
+    .sd-body { font-size: 10px; color: rgba(0,255,136,0.48); line-height: 1.75; }
+    .sd-asof {
+      font-family: 'Orbitron', monospace; font-size: 7px; letter-spacing: 3px;
+      color: rgba(0,255,136,0.28); margin-top: 9px; padding-top: 8px;
+      border-top: 1px solid rgba(0,255,136,0.08);
     }
   </style>
 </head>
@@ -900,6 +1019,56 @@
   </div>
 </div>
 
+<!-- Strikes legend -->
+<div id="legend9">
+  <div class="leg9-head">09 // STRIKE CERTAINTY</div>
+
+  <div class="leg9-sub">US / ISRAEL → IRAN</div>
+  <div class="leg9-row">
+    <svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="#ff7700" opacity="0.92"/></svg>
+    Confirmed airstrike
+  </div>
+  <div class="leg9-row">
+    <svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="#ff7700" opacity="0.50"/></svg>
+    Reported airstrike
+  </div>
+  <div class="leg9-row">
+    <svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="none" stroke="#ff7700" stroke-width="1.5" opacity="0.55"/></svg>
+    Explosion w/ footage
+  </div>
+  <div class="leg9-row">
+    <svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="none" stroke="#ff7700" stroke-width="1" opacity="0.25"/></svg>
+    Explosion, unverified
+  </div>
+
+  <div class="leg9-sub" style="margin-top:10px">IRAN / AXIS → REGION</div>
+  <div class="leg9-row">
+    <svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="#4499ff" opacity="0.85"/></svg>
+    Confirmed strike
+  </div>
+  <div class="leg9-row">
+    <svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="none" stroke="#4499ff" stroke-width="1.5" opacity="0.55"/></svg>
+    Reported / unconfirmed
+  </div>
+  <div class="leg9-row">
+    <svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="none" stroke="#4499ff" stroke-width="1" opacity="0.25"/></svg>
+    Intercepted
+  </div>
+
+  <div class="leg9-sub" style="margin-top:10px">BOTH SIDES</div>
+  <div class="leg9-row">
+    <svg width="26" height="14" viewBox="0 0 26 14">
+      <circle cx="5"  cy="7" r="3" fill="none" stroke="#aaa" stroke-width="1" opacity="0.45"/>
+      <circle cx="14" cy="7" r="5" fill="none" stroke="#aaa" stroke-width="1" opacity="0.45"/>
+      <circle cx="23" cy="7" r="3" fill="#aaa" opacity="0.06" stroke="#aaa" stroke-width="1"/>
+    </svg>
+    Radius = strike count
+  </div>
+  <div class="leg9-row" style="margin-top:6px;color:rgba(200,180,150,0.4);font-size:9px">
+    SOURCE: ISW · FEB–MAR 2026
+  </div>
+</div>
+
 <!-- Slide 4 legend -->
 <div id="legend4">
   <div class="leg4-head">RANGE FANS // IRAN ARSENAL</div>
@@ -941,14 +1110,67 @@
 
 <!-- Slide nav -->
 <div id="slide-nav">
-  <button class="slide-btn active" onclick="showSlide(1)">01 // INSTALLATIONS</button>
-  <button class="slide-btn"        onclick="showSlide(2)">02 // REGIONAL STRIKES</button>
-  <button class="slide-btn"        onclick="showSlide(3)">03 // INTERNAL REGIONS</button>
-  <button class="slide-btn"        onclick="showSlide(4)">04 // RANGE FANS</button>
-  <button class="slide-btn"        onclick="showSlide(5)">LOE 1 // NAVY</button>
-  <button class="slide-btn"        onclick="showSlide(6)">LOE 2 // MISSILES</button>
-  <button class="slide-btn"        onclick="showSlide(7)">LOE 3 // PROXIES</button>
-  <button class="slide-btn"        onclick="showSlide(8)">LOE 4 // NUCLEAR</button>
+  <button class="nav-main-btn active" id="nav-toggle" onclick="toggleNavMenu(event)">
+    <span id="nav-current-text">01 // INSTALLATIONS</span> &nbsp;▾
+  </button>
+  <button class="nav-main-btn" onclick="openAbout()">ABOUT</button>
+</div>
+
+<!-- Slide dropdown -->
+<div id="nav-dropdown">
+  <button class="slide-btn active" onclick="selectSlide(1)">01 // INSTALLATIONS</button>
+  <button class="slide-btn"        onclick="selectSlide(2)">02 // REGIONAL STRIKES</button>
+  <button class="slide-btn"        onclick="selectSlide(3)">03 // INTERNAL REGIONS</button>
+  <button class="slide-btn"        onclick="selectSlide(4)">04 // RANGE FANS</button>
+  <button class="slide-btn"        onclick="selectSlide(5)">LOE 1 // NAVY</button>
+  <button class="slide-btn"        onclick="selectSlide(6)">LOE 2 // MISSILES</button>
+  <button class="slide-btn"        onclick="selectSlide(7)">LOE 3 // PROXIES</button>
+  <button class="slide-btn"        onclick="selectSlide(8)">LOE 4 // NUCLEAR</button>
+  <button class="slide-btn"        onclick="selectSlide(9)">09 // STRIKES</button>
+</div>
+
+<!-- Slide description panel -->
+<div id="slide-desc"></div>
+
+<!-- About modal -->
+<div id="about-modal" onclick="closeAbout()">
+  <div id="about-card" onclick="event.stopPropagation()">
+    <span class="about-close" onclick="closeAbout()">✕</span>
+    <div class="about-title">IRAN TACTICAL</div>
+    <div class="about-sub">OPEN SOURCE INTELLIGENCE // OPERATIONAL OVERVIEW // UNCLASSIFIED</div>
+
+    <div class="about-body">
+      On February 28, 2026, the United States and Israel launched coordinated strikes on Iran under
+      Operation Epic Fury — the largest combined military operation against a nation-state since
+      the 2003 Iraq invasion. This dashboard maps the conflict using verified open-source intelligence,
+      public domain reporting, and daily-updated ISW event data.
+    </div>
+
+    <div class="about-section">// SLIDE GUIDE</div>
+    <div class="about-slide-row"><div class="about-slide-num">01 // INSTALL.</div><div class="about-slide-desc">Iran's pre-war military and nuclear infrastructure — the primary Coalition target set. Air bases, naval ports, IRGC missile bases, nuclear facilities.</div></div>
+    <div class="about-slide-row"><div class="about-slide-num">02 // REGIONAL</div><div class="about-slide-desc">Iranian strike campaign: missile and drone volumes against regional targets since Feb 28. Line width scales with munitions fired.</div></div>
+    <div class="about-slide-row"><div class="about-slide-num">03 // REGIONS</div><div class="about-slide-desc">Iran's ethnic fault lines — Kurdish, Azeri, Arab (Ahvazi), and Baloch populations. Key variables in post-conflict stability projections.</div></div>
+    <div class="about-slide-row"><div class="about-slide-num">04 // RANGE</div><div class="about-slide-desc">Pre-war reach of Iran's ballistic missiles, cruise missiles, and drone systems from a central firing position.</div></div>
+    <div class="about-slide-row"><div class="about-slide-num">LOE 1 // NAVY</div><div class="about-slide-desc">Op Epic Fury destroyed 60+ Iranian naval vessels in under 12 hours. First confirmed submarine torpedo kill since WWII.</div></div>
+    <div class="about-slide-row"><div class="about-slide-num">LOE 2 // MSLS</div><div class="about-slide-desc">300+ ballistic launchers destroyed. Two-thirds of Iran's 2,600 military-industrial sites struck. Production capacity eliminated.</div></div>
+    <div class="about-slide-row"><div class="about-slide-num">LOE 3 // PROXY</div><div class="about-slide-desc">Interdiction of Iran's proxy support network — Hezbollah, Houthis, PMF. Oct 2025 Gaza deal stripped Iran's primary leverage.</div></div>
+    <div class="about-slide-row"><div class="about-slide-num">LOE 4 // NUKE</div><div class="about-slide-desc">Op Midnight Hammer (Jun 22, 2025): first operational GBU-57 MOP use. Fordow, Natanz, Isfahan struck. Pickaxe Mtn: status unknown.</div></div>
+    <div class="about-slide-row"><div class="about-slide-num">09 // STRIKES</div><div class="about-slide-desc">983 US/Israeli strikes on Iran (orange) + 1,205 Iranian/Axis retaliatory events (blue), sourced from ISW daily coding. Opacity = certainty, radius = density.</div></div>
+
+    <div class="about-section">// DATA SOURCES</div>
+    <div class="about-source"><span>▸</span>Strike events (slide 09): Institute for the Study of War (ISW) via ArcGIS public FeatureServer — updated daily</div>
+    <div class="about-source"><span>▸</span>Installations, LOE data, range fans: OSINT compilation from public domain reporting</div>
+    <div class="about-source"><span>▸</span>Ethnic / provincial data: academic literature, UN reporting, UNHCR</div>
+    <div class="about-source"><span>▸</span>Iranian strike campaign volumes: ACLED Middle East Special Issue, Mar 2026</div>
+
+    <div class="about-note">
+      Strike data reflects ISW coding through March 24, 2026. Casualty figures vary across sources and should be treated as estimates.
+      This map is for journalistic and educational purposes. All information is derived from public domain sources.<br><br>
+      <strong style="color:rgba(0,255,136,0.45)">DAVID GAITSGORY</strong> &nbsp;//&nbsp;
+      <a href="mailto:dgaitsgory@gmail.com" style="color:rgba(0,255,136,0.35);text-decoration:none">dgaitsgory@gmail.com</a> &nbsp;//&nbsp;
+      <a href="https://dgaitsgo.com" target="_blank" rel="noopener noreferrer" style="color:rgba(0,255,136,0.35);text-decoration:none">dgaitsgo.com</a>
+    </div>
+  </div>
 </div>
 
 <!-- Coordinate tracker -->
@@ -1345,6 +1567,52 @@ const ICON_FNS = {
 let currentSlide = 1;
 const installationMarkers = [];   // slide 1
 const coalitionMarkers    = [];   // slide 2
+const slide9Markers       = [];   // slide 9
+
+// ── Slide metadata ────────────────────────────────────────
+const SLIDE_NAMES = [null,
+  '01 // INSTALLATIONS', '02 // REGIONAL STRIKES', '03 // INTERNAL REGIONS',
+  '04 // RANGE FANS', 'LOE 1 // NAVY', 'LOE 2 // MISSILES',
+  'LOE 3 // PROXIES', 'LOE 4 // NUCLEAR', '09 // STRIKES',
+];
+const SLIDE_DESCRIPTIONS = [null,
+  { num:'01', title:'MILITARY INSTALLATIONS',
+    body:'Pre-war mapping of Iran\'s air bases, naval ports, IRGC missile bases, nuclear facilities, and strategic command nodes — the primary Coalition target set for Operation Epic Fury, launched February 28, 2026.' },
+  { num:'02', title:'REGIONAL STRIKE CAMPAIGN',
+    body:'Iranian missile and drone attack volumes against regional targets since Feb 28. Line width scales with munitions fired. Iran launched 2,000+ projectiles at the UAE alone in the opening 96 hours of the war.' },
+  { num:'03', title:'INTERNAL FAULT LINES',
+    body:'Iran\'s ethnic minority geography — Kurdish, Azerbaijani, Arab (Ahvazi), and Baloch populations that face systematic state repression. Key variables in post-conflict stability and potential fragmentation scenarios.' },
+  { num:'04', title:'BALLISTIC ARSENAL — REACH',
+    body:'Pre-war strike reach of Iran\'s ballistic missiles, cruise missiles, and drone systems. The MIRV-capable Khorramshahr-4 Kheibar could strike multiple targets per salvo across the entire region.' },
+  { num:'LOE 1', title:'MARITIME DOMAIN',
+    body:'Operation Epic Fury (Feb 28) destroyed or disabled 60+ Iranian naval vessels in under 12 hours. The torpedo sinking of IRIS Dena by USS Charlotte was the first confirmed submarine kill since WWII.' },
+  { num:'LOE 2', title:'MISSILE DEGRADATION',
+    body:'300+ ballistic launchers destroyed; two-thirds of Iran\'s 2,600 military-industrial sites struck. IDF assessment: Iran\'s capacity to manufacture new missiles has been eliminated.' },
+  { num:'LOE 3', title:'PROXY INTERDICTION',
+    body:'The Oct 2025 Gaza deal stripped Iran of its primary leverage. CENTCOM seized 750+ tons of weapons in transit. PMF channels through Iraq remain active — Hezbollah and Houthis significantly attrited.' },
+  { num:'LOE 4', title:'NUCLEAR DENIAL',
+    body:'Operation Midnight Hammer (Jun 22, 2025): first operational use of the GBU-57 Massive Ordnance Penetrator. Fordow, Natanz, and Isfahan struck. Pickaxe Mountain facility has never been inspected — status unknown.' },
+  { num:'09', title:'CONFIRMED STRIKE LOCATIONS',
+    body:'ISW-coded events: orange = 983 US/Israeli strikes on Iran, blue = 1,205 Iranian/Axis retaliatory events. Filled circles are confirmed; rings are unverified. Bubble radius scales with city-level strike density.' },
+];
+
+// ── Nav dropdown ──────────────────────────────────────────
+function toggleNavMenu(e) {
+  e.stopPropagation();
+  document.getElementById('nav-dropdown').classList.toggle('open');
+}
+function selectSlide(n) {
+  document.getElementById('nav-dropdown').classList.remove('open');
+  showSlide(n);
+}
+document.addEventListener('click', () => {
+  document.getElementById('nav-dropdown').classList.remove('open');
+});
+
+// ── About modal ───────────────────────────────────────────
+function openAbout()  { document.getElementById('about-modal').classList.add('open'); }
+function closeAbout() { document.getElementById('about-modal').classList.remove('open'); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAbout(); });
 
 // ══════════════════════════════════════════════════════════
 //  SLIDE 2 DATA
@@ -1891,7 +2159,7 @@ function closeInfo() {
   } else if (currentSlide === 7) {
     map.flyTo({ center: [44.0, 28.0], zoom: 4.0, pitch: 0, bearing: 0, duration: 1200, essential: true });
   } else if (currentSlide === 8) {
-    map.flyTo({ center: [60.0, 14.0], zoom: 3.2, pitch: 0, bearing: 0, duration: 1200, essential: true });
+    map.flyTo({ center: [-21, 37], zoom: 3.0, pitch: 0, bearing: 0, duration: 1200, essential: true });
   } else {
     map.flyTo({ center: [54.5, 32.5], zoom: 5.0, pitch: 20, bearing: 0, duration: 1200, essential: true });
   }
@@ -2686,6 +2954,197 @@ map.on('load', () => {
 
   coalitionMarkers._slide7 = slide7Markers;
 
+  // ══════════════════════════════════════════════════════
+  //  SLIDE 9 LAYERS — ISW STRIKE DATA (loaded via strikes_data.js)
+  // ══════════════════════════════════════════════════════
+  (function buildSlide9() {
+    const strikeData  = window.ISW_STRIKES     || [];
+    const retData     = window.ISW_RETALIATORY || [];
+
+    // ── Helper: aggregate by city ──────────────────────────
+    function aggregateCities(records, confirmedKey) {
+      const cityMap = {};
+      records.forEach(r => {
+        const city = r.city || r.prov || r.country || 'Unknown';
+        if (!cityMap[city]) cityMap[city] = { city, lat: r.lat, lng: r.lng, count: 0, confirmed: 0 };
+        cityMap[city].count++;
+        if (r[confirmedKey] === 'Confirmed Airstrike' || r[confirmedKey] === 'YES') cityMap[city].confirmed++;
+        if (!cityMap[city].lat && r.lat) { cityMap[city].lat = r.lat; cityMap[city].lng = r.lng; }
+      });
+      return Object.values(cityMap).filter(c => c.lat && c.lng).map(c => ({
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [c.lng, c.lat] },
+        properties: { city: c.city, count: c.count, confirmed: c.confirmed, sqrtCount: Math.sqrt(c.count) },
+      }));
+    }
+
+    // ── Radius interpolation (shared) ─────────────────────
+    const radiusExpr = ['interpolate', ['linear'], ['get', 'sqrtCount'],
+      1, 8, 3, 16, 5, 24, 8, 34, 12, 46, 16, 58];
+
+    // ══ US / ISRAEL STRIKES ON IRAN ════════════════════════
+
+    const exactFeatures = strikeData
+      .filter(r => r.ct === 'Exact Target' || r.ct === 'Exact target' || r.ct === 'Exact target on Wikimapia')
+      .map(r => ({ type: 'Feature', geometry: { type: 'Point', coordinates: [r.lng, r.lat] }, properties: r }));
+
+    const strikeCityFeatures = aggregateCities(strikeData, 'et');
+
+    map.addSource('strikes-city', { type: 'geojson', data: { type: 'FeatureCollection', features: strikeCityFeatures } });
+    map.addLayer({
+      id: 'strikes-city-fill', type: 'circle', source: 'strikes-city',
+      layout: { visibility: 'none' },
+      paint: { 'circle-radius': radiusExpr, 'circle-color': '#ff7700', 'circle-opacity': 0.07,
+               'circle-stroke-width': 1.2, 'circle-stroke-color': '#ff7700', 'circle-stroke-opacity': 0.50 },
+    });
+
+    map.addSource('strikes-exact', { type: 'geojson', data: { type: 'FeatureCollection', features: exactFeatures } });
+
+    map.addLayer({
+      id: 'strikes-exact-glow', type: 'circle', source: 'strikes-exact',
+      layout: { visibility: 'none' },
+      paint: {
+        'circle-radius': 11, 'circle-color': '#ff7700', 'circle-blur': 1.8,
+        'circle-opacity': ['case', ['==', ['get', 'et'], 'Confirmed Airstrike'], 0.22,
+                                   ['==', ['get', 'et'], 'Reported Airstrike'], 0.12, 0.05],
+      },
+    });
+    map.addLayer({
+      id: 'strikes-exact-fill', type: 'circle', source: 'strikes-exact',
+      filter: ['in', ['get', 'et'], ['literal', ['Confirmed Airstrike', 'Reported Airstrike']]],
+      layout: { visibility: 'none' },
+      paint: {
+        'circle-radius': 5, 'circle-color': '#ff7700', 'circle-stroke-width': 0,
+        'circle-opacity': ['case', ['==', ['get', 'et'], 'Confirmed Airstrike'], 0.92, 0.55],
+      },
+    });
+    map.addLayer({
+      id: 'strikes-exact-ring', type: 'circle', source: 'strikes-exact',
+      filter: ['in', ['get', 'et'], ['literal', ['Report of Explosion with Footage', 'Report of Explosion without Footage']]],
+      layout: { visibility: 'none' },
+      paint: {
+        'circle-radius': 5, 'circle-color': 'rgba(0,0,0,0)',
+        'circle-stroke-width': 1.5, 'circle-stroke-color': '#ff7700',
+        'circle-stroke-opacity': ['case', ['==', ['get', 'et'], 'Report of Explosion with Footage'], 0.52, 0.22],
+      },
+    });
+
+    // ══ IRANIAN / AXIS RETALIATORY STRIKES ═════════════════
+
+    const retFeatures = retData.map(r => ({
+      type: 'Feature',
+      geometry: { type: 'Point', coordinates: [r.lng, r.lat] },
+      properties: r,
+    }));
+
+    const retCityFeatures = aggregateCities(retData, 'confirmed');
+
+    map.addSource('ret-city', { type: 'geojson', data: { type: 'FeatureCollection', features: retCityFeatures } });
+    map.addLayer({
+      id: 'ret-city-fill', type: 'circle', source: 'ret-city',
+      layout: { visibility: 'none' },
+      paint: { 'circle-radius': radiusExpr, 'circle-color': '#4499ff', 'circle-opacity': 0.07,
+               'circle-stroke-width': 1.2, 'circle-stroke-color': '#4499ff', 'circle-stroke-opacity': 0.45 },
+    });
+
+    map.addSource('ret-exact', { type: 'geojson', data: { type: 'FeatureCollection', features: retFeatures } });
+
+    map.addLayer({
+      id: 'ret-glow', type: 'circle', source: 'ret-exact',
+      layout: { visibility: 'none' },
+      paint: {
+        'circle-radius': 10, 'circle-color': '#4499ff', 'circle-blur': 1.8,
+        'circle-opacity': ['case', ['==', ['get', 'confirmed'], 'YES'], 0.20, 0.06],
+      },
+    });
+    // Confirmed: filled
+    map.addLayer({
+      id: 'ret-fill', type: 'circle', source: 'ret-exact',
+      filter: ['==', ['get', 'confirmed'], 'YES'],
+      layout: { visibility: 'none' },
+      paint: { 'circle-radius': 4.5, 'circle-color': '#4499ff', 'circle-opacity': 0.85, 'circle-stroke-width': 0 },
+    });
+    // Unconfirmed / intercepted: hollow rings
+    map.addLayer({
+      id: 'ret-ring', type: 'circle', source: 'ret-exact',
+      filter: ['!=', ['get', 'confirmed'], 'YES'],
+      layout: { visibility: 'none' },
+      paint: {
+        'circle-radius': 4.5, 'circle-color': 'rgba(0,0,0,0)',
+        'circle-stroke-width': 1.5, 'circle-stroke-color': '#4499ff',
+        'circle-stroke-opacity': ['case',
+          ['==', ['get', 'confirmed'], 'NO'], 0.50,
+          ['==', ['get', 'intercepted'], 'Yes'], 0.30,
+          0.22],
+      },
+    });
+
+    // ── Click handlers ─────────────────────────────────────
+    function openStrikeModal(p, color, isRet) {
+      const c = color;
+      document.getElementById('modal-accent').style.background = c;
+      document.getElementById('info-icon').innerHTML =
+        `<svg width="36" height="36" viewBox="0 0 36 36">
+          <circle cx="18" cy="18" r="15" fill="${c}22" stroke="${c}" stroke-width="1.5"/>
+          <circle cx="18" cy="18" r="6" fill="${c}" opacity="0.9"/>
+        </svg>`;
+      const cat = isRet
+        ? `${(p.actor || 'IRAN / AXIS').toUpperCase()} — RETALIATORY STRIKE`
+        : `${(p.et || 'STRIKE').toUpperCase()}`;
+      document.getElementById('info-cat').textContent = cat;
+      document.getElementById('info-cat').style.color = c;
+      document.getElementById('info-name').textContent = p.site || p.city || 'Unknown Target';
+      document.getElementById('info-name').style.color = c;
+      document.getElementById('info-coord').textContent =
+        `${(+p.lat).toFixed(4)}° N   ${(+p.lng).toFixed(4)}° E`;
+      const loc = isRet
+        ? `${p.city || ''}${p.country ? ', ' + p.country : ''}`
+        : `${p.city || ''}${p.prov ? ', ' + p.prov : ''}${p.type ? ' — ' + p.type : ''}`;
+      document.getElementById('info-desc').textContent =
+        loc + (p.note ? '\n\n' + p.note : '');
+      if (p.src) setModalSource(p.src, 'ISW SOURCE');
+      else hideModalSource();
+      document.getElementById('modal-backdrop').classList.add('open');
+    }
+
+    ['strikes-exact-fill', 'ret-fill'].forEach((layerId, i) => {
+      const isRet = i === 1;
+      const color = isRet ? '#4499ff' : '#ff7700';
+      map.on('click', layerId, e => {
+        if (currentSlide !== 9) return;
+        e.preventDefault();
+        openStrikeModal(e.features[0].properties, color, isRet);
+        map.flyTo({ center: e.lngLat, zoom: Math.max(map.getZoom(), 8), duration: 800 });
+      });
+      map.on('mouseenter', layerId, () => { if (currentSlide === 9) map.getCanvas().style.cursor = 'pointer'; });
+      map.on('mouseleave', layerId, () => { map.getCanvas().style.cursor = ''; });
+    });
+
+    // ── City labels ────────────────────────────────────────
+    function addCityLabels(features, color) {
+      features
+        .filter(f => f.properties.count >= 5)
+        .sort((a, b) => b.properties.count - a.properties.count)
+        .forEach(f => {
+          const { city, count } = f.properties;
+          const el = document.createElement('div');
+          el.className = 'strike-label';
+          el.style.color = color.replace(')', ',0.85)').replace('rgb', 'rgba');
+          el.style.borderLeft = `2px solid ${color.replace(')', ',0.7)').replace('rgb', 'rgba')}`;
+          el.style.color = color;
+          el.style.borderLeft = `2px solid ${color}bb`;
+          el.textContent = `${city.toUpperCase()}  ${count}`;
+          const mk = new mapboxgl.Marker({ element: el, anchor: 'left', offset: [10, 0] })
+            .setLngLat(f.geometry.coordinates).addTo(map);
+          mk.getElement().style.display = 'none';
+          slide9Markers.push(mk);
+        });
+    }
+    addCityLabels(strikeCityFeatures, '#ff7700');
+    addCityLabels(retCityFeatures,    '#4499ff');
+
+  })();
+
   // Animate strike glow pulse
   let pulseDir = 1, pulseVal = 0.18;
   (function pulseStrikes() {
@@ -2714,6 +3173,8 @@ const SLIDE_LAYERS_5 = [];
 const SLIDE_LAYERS_6 = [];
 const SLIDE_LAYERS_7 = ['supply-glow', 'supply-lines'];
 const SLIDE_LAYERS_8 = ['b2-glow', 'b2-lines'];
+const SLIDE_LAYERS_9 = ['strikes-city-fill', 'strikes-exact-glow', 'strikes-exact-fill', 'strikes-exact-ring',
+                        'ret-city-fill', 'ret-glow', 'ret-fill', 'ret-ring'];
 
 function setLayerVisibility(ids, vis) {
   ids.forEach(id => {
@@ -2727,10 +3188,37 @@ function getSlide5Markers() { return coalitionMarkers._slide5 || []; }
 function getSlide6Markers() { return coalitionMarkers._slide6 || []; }
 function getSlide7Markers() { return coalitionMarkers._slide7 || []; }
 function getSlide8Markers() { return coalitionMarkers._slide8 || []; }
+function getSlide9Markers() { return slide9Markers; }
 
 function showSlide(n) {
   currentSlide = n;
-  document.querySelectorAll('.slide-btn').forEach((btn, i) => btn.classList.toggle('active', i+1 === n));
+  history.replaceState(null, '', '#' + n);
+
+  // Update nav toggle label + dropdown active state
+  const navText = document.getElementById('nav-current-text');
+  if (navText) navText.textContent = SLIDE_NAMES[n] || '';
+  document.getElementById('nav-toggle').classList.toggle('active', true);
+  document.querySelectorAll('#nav-dropdown .slide-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', i + 1 === n);
+  });
+
+  // Update slide description panel
+  const desc = SLIDE_DESCRIPTIONS[n];
+  const sdPanel = document.getElementById('slide-desc');
+  if (desc && sdPanel) {
+    sdPanel.style.display = 'block';
+    let asof = '';
+    if (n === 9) {
+      const d = (window.ISW_STRIKES_ASOF || '') + (window.ISW_RETALIATORY_ASOF && window.ISW_RETALIATORY_ASOF !== window.ISW_STRIKES_ASOF ? ' / ' + window.ISW_RETALIATORY_ASOF : '');
+      if (d) asof = `<div class="sd-asof">DATA AS OF ${d}</div>`;
+    } else if (n === 2) {
+      asof = `<div class="sd-asof">DATA AS OF 24 MAR 2026 — ACLED / ISW</div>`;
+    }
+    sdPanel.innerHTML =
+      `<div class="sd-num">SLIDE ${desc.num}</div>` +
+      `<div class="sd-title">${desc.title}</div>` +
+      `<div class="sd-body">${desc.body}</div>` + asof;
+  }
 
   // Hide everything first
   installationMarkers.forEach(m => m.getElement().style.display = 'none');
@@ -2741,11 +3229,12 @@ function showSlide(n) {
   getSlide6Markers().forEach(m => m.getElement().style.display = 'none');
   getSlide7Markers().forEach(m => m.getElement().style.display = 'none');
   getSlide8Markers().forEach(m => m.getElement().style.display = 'none');
+  getSlide9Markers().forEach(m => m.getElement().style.display = 'none');
   setLayerVisibility([
     ...SLIDE_LAYERS_2, ...SLIDE_LAYERS_3, ...SLIDE_LAYERS_4,
-    ...SLIDE_LAYERS_7, ...SLIDE_LAYERS_8,
+    ...SLIDE_LAYERS_7, ...SLIDE_LAYERS_8, ...SLIDE_LAYERS_9,
   ], 'none');
-  ['counts','legend','legend2','legend3','legend4','legend5','legend6','legend7','legend8','loe-panel']
+  ['counts','legend','legend2','legend3','legend4','legend5','legend6','legend7','legend8','legend9','loe-panel']
     .forEach(id => document.getElementById(id).style.display = 'none');
 
   if (n === 1) {
@@ -2812,14 +3301,26 @@ function showSlide(n) {
     panel.style.borderColor = 'rgba(255,60,60,0.25)';
     panel.innerHTML = p8.html;
     document.getElementById('legend8').style.display = 'block';
-    map.flyTo({ center: [60.0, 14.0], zoom: 3.2, pitch: 0, bearing: 0, duration: 1300 });
+    map.flyTo({ center: [-21, 37], zoom: 3.0, pitch: 0, bearing: 0, duration: 1300 });
+
+  } else if (n === 9) {
+    getSlide9Markers().forEach(m => m.getElement().style.display = '');
+    setLayerVisibility(SLIDE_LAYERS_9, 'visible');
+    document.getElementById('legend9').style.display = 'block';
+    map.flyTo({ center: [53.5, 32.5], zoom: 5.4, pitch: 0, bearing: 0, duration: 1300 });
   }
 }
 
-// Keyboard nav
+// Keyboard nav (Escape handled by about-modal listener above)
 document.addEventListener('keydown', e => {
-  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') showSlide(Math.min(currentSlide + 1, 8));
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') showSlide(Math.min(currentSlide + 1, 9));
   if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   showSlide(Math.max(currentSlide - 1, 1));
+});
+
+// Deep-link: navigate to slide from URL hash on load
+map.once('idle', () => {
+  const hash = parseInt(window.location.hash.replace('#', ''));
+  if (hash >= 1 && hash <= 9) showSlide(hash);
 });
 </script>
 </body>
